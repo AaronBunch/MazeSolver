@@ -28,8 +28,8 @@ default) and pick the shortest real solution.
 ```python
 from MazeSolver import MazeSolver as ms
 maze1 = ms('test_maze_1.txt')
-ms.solve_maze()
-ms.blaze_trail()
+maze1.solve_maze()
+maze1.blaze_trail()
 ```
 The solve_maze() method generates filled-in mazes (all black)
 except for a single path from start to finish. The blaze_trail()
@@ -37,18 +37,16 @@ method marks the shortest path on the original maze. Once the
 maze has been solved and the trail blazed, the maze solver
 object has the following attributes:
 
-  *ms.blazed_trail        the original maze marked with the shortest
-                          path from start to finish
+*ms.blazed_trail:  the original maze marked with the shortest
+path from start to finish
 
-  *ms.solutions           a list of all n solutions found by the
-                          walker; each solution is a maze completely
-                          filled in except for one path from start
-                          to finish; spurious solutions are omitted
+*ms.solutions:  a list of all n solutions found by the
+walker; each solution is a maze completely
+filled in except for one path from start
+to finish; spurious solutions are omitted
                       
-  *ms.shortest_solution   the original maze, completely filled in,
-                          except for the shortest path from start
-                          to finish
+*ms.shortest_solution:  the original maze, completely filled in,
+except for the shortest path from start to finish
 
-  *ms.solution_lengths    a list of the lengths of all n solutions
-                          found by the walker (excluding the spurious
-                          solutions)
+*ms.solution_lengths:  a list of the lengths of all n solutions
+found by the walker (excluding the spurious solutions)
