@@ -44,7 +44,7 @@ anything, but only generate the following attributes:
 path from start to finish
 
 2. maze1.solutions:  a list of all solutions found by the
-walker (there may by fewer than n, because spurious solutions are
+walker (there may be fewer than n, because spurious solutions are
 omitted); each solution is a maze completely filled in except for
 one path from start to finish
                       
