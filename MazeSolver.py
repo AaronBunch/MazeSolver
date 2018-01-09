@@ -170,18 +170,22 @@ class MazeSolver:
                         dead_ends = True
         return maze
 
+    @staticmethod
     def move_north(row, col):
         row -= 1
         return row, col
 
+    @staticmethod
     def move_south(row, col):
         row += 1
         return row, col
 
+    @staticmethod
     def move_east(row, col):
         col += 1
         return row, col
 
+    @staticmethod
     def move_west(row, col):
         col -= 1
         return row, col
@@ -258,38 +262,38 @@ class MazeSolver:
                         direction = random.choice(['path_north', 'path_south',
                                                    'path_east', 'path_west'])
                         if (direction == 'path_north') and (path_north):
-                            row, col = move_north(row, col)
+                            row, col = MazeSolver.move_north(row, col)
                             flag = False
                         elif (direction == 'path_south') and (path_south):
-                            row, col = move_south(row, col)
+                            row, col = MazeSolver.move_south(row, col)
                             flag = False
                         elif (direction == 'path_east') and (path_east):
-                            row, col = move_east(row, col)
+                            row, col = MazeSolver.move_east(row, col)
                             flag = False
                         elif (direction == 'path_west') and (path_west):
-                            row, col = move_west(row, col)
+                            row, col = MazeSolver.move_west(row, col)
                             flag = False
 
                 elif turn == 'right':
                     if path_north:
-                        row, col = move_north(row, col)
+                        row, col = MazeSolver.move_north(row, col)
                     elif path_east:
-                        row, col = move_east(row, col)
+                        row, col = MazeSolver.move_east(row, col)
                     elif path_south:
-                        row, col = move_south(row, col)
+                        row, col = MazeSolver.move_south(row, col)
                     else:
-                        row, col = move_west(row, col)
+                        row, col = MazeSolver.move_west(row, col)
 
                 else:
                     # turn == 'left'
                     if path_south:
-                        row, col = move_south(row, col)
+                        row, col = MazeSolver.move_south(row, col)
                     elif path_west:
-                        row, col = move_west(row, col)
+                        row, col = MazeSolver.move_west(row, col)
                     elif path_north:
-                        row, col = move_north(row, col)
+                        row, col = MazeSolver.move_north(row, col)
                     else:
-                        row, col = move_east(row, col)
+                        row, col = MazeSolver.move_east(row, col)
 
             # otherwise take the first open path without back-tracking;
             # to avoid back-tracking, and to determine the walker's left
@@ -303,70 +307,70 @@ class MazeSolver:
                     # coming from the west
                     if this_turn == 'right':
                         if path_south:
-                            row, col = move_south(row, col)
+                            row, col = MazeSolver.move_south(row, col)
                         elif path_east:
-                            row, col = move_east(row, col)
+                            row, col = MazeSolver.move_east(row, col)
                         else:
-                            row, col = move_north(row, col)
+                            row, col = MazeSolver.move_north(row, col)
                     else:
                         # turn == 'left'
                         if path_north:
-                            row, col = move_north(row, col)
+                            row, col = MazeSolver.move_north(row, col)
                         elif path_east:
-                            row, col = move_east(row, col)
+                            row, col = MazeSolver.move_east(row, col)
                         else:
-                            row, col = move_south(row, col)
+                            row, col = MazeSolver.move_south(row, col)
                 elif (prev_row == row) and (col < prev_col):
                     # coming from the east
                     if this_turn == 'right':
                         if path_north:
-                            row, col = move_north(row, col)
+                            row, col = MazeSolver.move_north(row, col)
                         elif path_west:
-                            row, col = move_west(row, col)
+                            row, col = MazeSolver.move_west(row, col)
                         else:
-                            row, col = move_south(row, col)
+                            row, col = MazeSolver.move_south(row, col)
                     else:
                         # turn == 'left'
                         if path_south:
-                            row, col = move_south(row, col)
+                            row, col = MazeSolver.move_south(row, col)
                         elif path_west:
-                            row, col = move_west(row, col)
+                            row, col = MazeSolver.move_west(row, col)
                         else:
-                            row, col = move_north(row, col)
+                            row, col = MazeSolver.move_north(row, col)
                 elif (prev_col == col) and (row > prev_row):
                     # coming from the north
                     if this_turn == 'right':
                         if path_west:
-                            row, col = move_west(row, col)
+                            row, col = MazeSolver.move_west(row, col)
                         elif path_south:
-                            row, col = move_south(row, col)
+                            row, col = MazeSolver.move_south(row, col)
                         else:
-                            row, col = move_east(row, col)
+                            row, col = MazeSolver.move_east(row, col)
                     else:
                         # turn == 'left'
                         if path_east:
-                            row, col = move_east(row, col)
+                            row, col = MazeSolver.move_east(row, col)
                         elif path_south:
-                            row, col = move_south(row, col)
+                            row, col = MazeSolver.move_south(row, col)
                         else:
-                            row, col = move_west(row, col)
+                            row, col = MazeSolver.move_west(row, col)
                 else:
                     # coming from the south
                     if this_turn == 'right':
                         if path_east:
-                            row, col = move_east(row, col)
+                            row, col = MazeSolver.move_east(row, col)
                         elif path_north:
-                            row, col = move_north(row, col)
+                            row, col = MazeSolver.move_north(row, col)
                         else:
-                            row, col = move_west(row, col)
+                            row, col = MazeSolver.move_west(row, col)
                     else:
                         # turn == 'left'
                         if path_west:
-                            row, col = move_west(row, col)
+                            row, col = MazeSolver.move_west(row, col)
                         elif path_north:
-                            row, col = move_north(row, col)
+                            row, col = MazeSolver.move_north(row, col)
                         else:
-                            row, col = move_east(row, col)
+                            row, col = MazeSolver.move_east(row, col)
                 prev_row = temp_row
                 prev_col = temp_col
 
