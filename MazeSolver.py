@@ -379,6 +379,17 @@ class MazeSolver:
                     row, col)
             paths = [path_north, path_south, path_east, path_west]
 
+    def blaze_trail(self):
+        """docstring"""
+
+        working_maze = self.original_maze[:]
+        for row in range(1, len(working_maze)-1):
+            for col in range(1, len(working_maze[row])-1):
+                if self.shortest_solution[row][col] == self.path:
+                    working_maze = self.insert_char(working_maze,
+                                                    row, col, self.blaze)
+        self.blazed_trail = working_maze
+
     def solve_maze(self, n=20):
         """docstring"""
 
@@ -408,15 +419,5 @@ class MazeSolver:
                 if self.solution_lengths[-1] < shortest:
                     shortest = self.solution_lengths[-1]
                     self.shortest_solution = working_maze
-
-    def blaze_trail(self):
-        """docstring"""
-
-        working_maze = self.original_maze[:]
-        for row in range(1, len(working_maze)-1):
-            for col in range(1, len(working_maze[row])-1):
-                if self.shortest_solution[row][col] == self.path:
-                    working_maze = self.insert_char(working_maze,
-                                                    row, col, self.blaze)
-        self.blazed_trail = working_maze
-
+        self.blaze_trail()
+        return self.blazed_trail

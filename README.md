@@ -29,7 +29,6 @@ default) and pick the shortest real solution.
 from MazeSolver import MazeSolver as ms
 maze1 = ms('test_maze_1.txt')
 maze1.solve_maze()
-maze1.blaze_trail()
 ```
 The maze file should be a text file with lines of equal length.
 By default 0 -> wall, 1 -> path, 'S' -> start, and 'D' ->
@@ -37,19 +36,25 @@ destination. If there is no border wall around the maze, one
 is added. See the test mazes in this repository. A small maze
 template is also provided.
 
-The solve_maze() and blaze_trail() methods do not return
-anything, but only generate the following attributes:
+The solve_maze() method returns the original maze marked with the
+shortest path from start to finish. After solve_maze() is called,
+the MazeSolver object has the following attributes:
 
-1. maze1.blazed_trail:  the original maze marked with the shortest
-path from start to finish
+1. MazeSolver.original_maze:  This is available as soon as the object
+is initialized.
 
-2. maze1.solutions:  a list of all solutions found by the
+2. MazeSolver.blazed_trail:  The original maze marked with the shortest
+path from start to finish.
+
+3. MazeSolver.solutions:  A list of all solutions found by the
 walker (there may be fewer than n, because spurious solutions are
-omitted); each solution is a maze completely filled in except for
-one path from start to finish
+omitted). Each solution is a maze completely filled in except for
+one path from start to finish.
                       
-3. maze1.shortest_solution:  the original maze, completely filled in,
-except for the shortest path from start to finish
+4. MazeSolver.shortest_solution:  The original maze, completely filled in,
+except for the shortest path from start to finish.
 
-4. maze1.solution_lengths:  a list of the lengths of all solutions
-found by the walker (excluding the spurious solutions)
+5. MazeSolver.solution_lengths:  A list of the lengths of all solutions
+found by the walker (excluding the spurious solutions).
+
+
