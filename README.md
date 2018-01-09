@@ -1,7 +1,7 @@
 # MazeSolver
 A python maze solver class
 
-# The Idea
+## The Idea
 This maze solver started with the idea that it would be
 easier to find the dead-ends in a maze than the path through
 it. So the solver scans through the maze, filling in all
@@ -24,7 +24,7 @@ breaks the loops in such a way that there is no path from
 start to finish. So, we solve the maze twenty times (by
 default) and pick the shortest real solution.
 
-# Use
+## Use
 
 >>>from MazeSolver import MazeSolver as ms
 >>>maze1 = ms('test_maze_1.txt')
