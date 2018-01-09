@@ -31,22 +31,25 @@ maze1 = ms('test_maze_1.txt')
 maze1.solve_maze()
 maze1.blaze_trail()
 ```
-The solve_maze() method generates filled-in mazes (all black)
-except for a single path from start to finish. The blaze_trail()
-method marks the shortest path on the original maze. Once the
-maze has been solved and the trail blazed, the maze solver
-object has the following attributes:
+The maze file should be a text file with lines of equal length.
+By default 0 -> wall, 1 -> path, 'S' -> start, and 'D' ->
+destination. If there is no border wall around the maze, one
+is added. See the test mazes in this repository. A small maze
+template is also provided.
 
-*ms.blazed_trail:  the original maze marked with the shortest
+The solve_maze() and blaze_trail() methods do not return
+anything, but only generate the following attributes:
+
+1. maze1.blazed_trail:  the original maze marked with the shortest
 path from start to finish
 
-*ms.solutions:  a list of all n solutions found by the
-walker; each solution is a maze completely
-filled in except for one path from start
-to finish; spurious solutions are omitted
+2. maze1.solutions:  a list of all solutions found by the
+walker (there may by fewer than n, because spurious solutions are
+omitted); each solution is a maze completely filled in except for
+one path from start to finish
                       
-*ms.shortest_solution:  the original maze, completely filled in,
+3. maze1.shortest_solution:  the original maze, completely filled in,
 except for the shortest path from start to finish
 
-*ms.solution_lengths:  a list of the lengths of all n solutions
+4. maze1.solution_lengths:  a list of the lengths of all solutions
 found by the walker (excluding the spurious solutions)
