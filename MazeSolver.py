@@ -6,8 +6,7 @@ __author__ = "Aaron Bunch"
 __date__ = "Jan 9, 2018"
 
 class MazeSolver:
-    """
-    Find the shortest path through a maze.
+    """Find the shortest path through a maze.
 
     Public method:
         solve_maze(n=20):   Solve the maze n times and return the shortest path 
@@ -25,8 +24,7 @@ class MazeSolver:
 
     def __init__(self, filename, source_wall='0', source_path='1',
                  source_start='S', source_dest='D'):
-        """
-        Construct a MazeSolver object.
+        """Construct a MazeSolver object.
 
         Args:
             filename: The name of the text file containing the maze.
@@ -64,7 +62,7 @@ class MazeSolver:
     def verify_maze(self):
         """Verify that the loaded maze is in the correct format.
         
-           Quits with a message if there is a problem. 
+        Quits with a message if there is a problem. 
         """
 
         # check for start and destination
@@ -97,9 +95,9 @@ class MazeSolver:
     def find_char(self, maze, char):
         """Find a given character in the maze.
        
-           Returns:
-               row, column of the character
-           """
+        Returns:
+            row, column of the character
+        """
 
         char_row = None
         char_col = None
@@ -111,7 +109,11 @@ class MazeSolver:
         return char_row, char_col
 
     def count_char(self, maze, char):
-        """Count the number of a given character in the maze."""
+        """Count the number of a given character in the maze.
+        
+        Returns:
+            count
+        """
 
         num = 0
         for row in range(1, len(maze)-1):
@@ -123,8 +125,8 @@ class MazeSolver:
     def num_branches(self, maze):
         """Count the number of path branches in the maze.
         
-           Calls is_branch() method. A branch is any path location with
-           open paths on at least three sides.
+        Calls is_branch() method. A branch is any path location with
+        open paths on at least three sides.
         """
 
         num = 0
@@ -137,8 +139,8 @@ class MazeSolver:
     def insert_char(self, maze, row, col, char):
         """Insert a character into a maze at a specified row and column.
         
-           Returns:
-               The maze with the inserted character.
+        Returns:
+            The maze with the inserted character.
         """
 
         temp_list = list(maze[row])
@@ -149,8 +151,8 @@ class MazeSolver:
     def get_paths(self, maze, row, col):
         """Find the open paths at a point in a maze.
         
-           Returns:
-               A boolean for each direction
+        Returns:
+            A boolean for each direction
         """
 
         path_north = False
@@ -171,8 +173,8 @@ class MazeSolver:
     def is_dead_end(self, maze, row, col):
         """Determine if a point in the maze is a dead-end.
         
-           A dead-end is any path location with an open path in only one
-           direction.
+        A dead-end is any path location with an open path in only one
+        direction.
         """
 
         paths = self.get_paths(maze, row, col)
@@ -186,8 +188,8 @@ class MazeSolver:
     def is_walled_in(self, maze, row, col):
         """Determine if a maze location is surrounded entirely by walls.
         
-           This is used to filter out spurious solutions, in which the
-           start and destination are completely walled in.
+        This is used to filter out spurious solutions, in which the
+        start and destination are completely walled in.
         """
 
         paths = self.get_paths(maze, row, col)
@@ -199,8 +201,8 @@ class MazeSolver:
     def is_branch(self, maze, row, col):
         """Determine if a maze location is branch in the path.
         
-           A branch is any path location that has open paths on at least
-           three sides.
+        A branch is any path location that has open paths on at least
+        three sides.
         """
 
         paths = self.get_paths(maze, row, col)
@@ -212,10 +214,10 @@ class MazeSolver:
             return False
 
     def fill_in_dead_ends(self, maze):
-        """Fill in all dead-end paths with wall.
+        """Fill in all dead-ends with wall.
         
-           Returns:
-               The maze with no dead-end paths.
+        Returns:
+            The maze with no dead-ends.
         """
 
         dead_ends = True
@@ -253,12 +255,12 @@ class MazeSolver:
     def break_loop(self, maze, turn='right'):
         """Find a loop in the maze, and break it by inserting a wall.
         
-           The loop is recognized when the walker returns to a branch.
-           The loop is broken by walling off the branch behind the walker.
+        The loop is recognized when the walker returns to a branch.
+        The loop is broken by walling off the branch behind the walker.
            
-           Returns:
-               False, if no loop is found.
-               The maze with the loop broken, if a loop is found.
+        Returns:
+            False, if no loop is found.
+            The maze with the loop broken, if a loop is found.
         """
 
         # start at S
