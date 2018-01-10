@@ -9,17 +9,16 @@ class MazeSolver:
     """Find the shortest path through a maze.
 
     Public method:
-        solve_maze(n=20):   Solve the maze n times and return the shortest path 
+        solve_maze(n=50):   Solve the maze n times and return the shortest path 
                             marked on the original maze.
     Instance variables:
-        original_maze:      A list of strings representing the maze as it was
-                            loaded from its source file.
-        solution_lengths:   A list of the path-lengths of the solutions.
-        solutions:          A list of solutions to the maze. Each solution is
-                            a single path from start to destination. All other
-                            paths are filled in.
+        original_maze:      The maze as it was loaded from its source file
+                            (a list of strings).
+        solution_lengths:   A list of the path-lengths of the real solutions
+                            (spurious solutions omitted).
+        solutions:          A list of solutions to the maze (spurious solutions
+                            omitted).
         shortest_solution:  The solution with the shortest path.
-        blazed_trail:       The shortest solution marked onto the original maze.
     """
 
     def __init__(self, filename, source_wall='0', source_path='1',
@@ -449,23 +448,22 @@ class MazeSolver:
                     row, col)
             paths = [path_north, path_south, path_east, path_west]
 
-    def blaze_trail(self):
+    def blaze_trail(self, solution):
         """Mark the solution on the original maze."""
 
-        working_maze = self.original_maze[:]
-        for row in range(1, len(working_maze)-1):
-            for col in range(1, len(working_maze[row])-1):
-                if self.shortest_solution[row][col] == self.path:
-                    working_maze = self.insert_char(working_maze,
+        blazed_trail = self.original_maze[:]
+        for row in range(1, len(blazed_trail)-1):
+            for col in range(1, len(blazed_trail[row])-1):
+                if solution[row][col] == self.path:
+                    blazed_trail = self.insert_char(blazed_trail,
                                                     row, col, self.blaze)
-        self.blazed_trail = working_maze
+        return blazed_trail 
 
-    def solve_maze(self, n=20):
+    def solve_maze(self, n=50):
         """Solve the maze n times, and return the shortest solution."""
 
         self.solutions = []
         self.solution_lengths = []
-        shortest = 10e9 # some arbitrarily large number
         for i in range(n):
             working_maze = self.original_maze[:] # refresh working maze 
             working_maze = self.fill_in_dead_ends(working_maze)
@@ -486,8 +484,16 @@ class MazeSolver:
                 self.solutions.append(working_maze)
                 self.solution_lengths.append(self.count_char(working_maze,
                     self.path))
-                if self.solution_lengths[-1] < shortest:
-                    shortest = self.solution_lengths[-1]
-                    self.shortest_solution = working_maze
-        self.blaze_trail()
-        return self.blazed_trail
+        # mark the solutions on the original maze
+        for i, solution in enumerate(self.solutions):
+            self.solutions[i] = self.blaze_trail(solution)
+        # return the shortest solution
+        # this is a monstrous way to find the shortest solution, but I don't
+        # want to import numpy.argmin just for this one line
+        self.shortest_solution = self.solutions[
+            self.solution_lengths.index(min(self.solution_lengths))]
+        return self.shortest_solution
+
+
+
+

@@ -21,7 +21,7 @@ there is a single path from start to finish.
 Almost. The randomly turning walker does not always find the
 shortest path through the loops. And sometimes the walker
 breaks the loops in such a way that there is no path from
-start to finish. So, we solve the maze twenty times (by
+start to finish. So, we solve the maze fifty times (by
 default) and pick the shortest real solution.
 
 ## Use
@@ -43,17 +43,13 @@ the MazeSolver object has the following attributes:
 1. MazeSolver.original_maze:  This is available as soon as the object
 is initialized.
 
-2. MazeSolver.blazed_trail:  The original maze marked with the shortest
-path from start to finish.
+2. MazeSolver.shortest_solution:  The shortest path from start to
+finish marked on the original maze.
 
 3. MazeSolver.solutions:  A list of all solutions found by the
 walker (there may be fewer than n, because spurious solutions are
-omitted). Each solution is a maze completely filled in except for
-one path from start to finish.
+omitted). Each solution is marked on the original maze.
                       
-4. MazeSolver.shortest_solution:  The original maze, completely filled in,
-except for the shortest path from start to finish.
-
 5. MazeSolver.solution_lengths:  A list of the lengths of all solutions
 found by the walker (excluding the spurious solutions).
 
