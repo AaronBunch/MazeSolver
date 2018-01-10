@@ -1,17 +1,42 @@
-#!/usr/bin/env python
-""" Written by Aaron Bunch
-v.1 Jan 9, 2018
-"""
+"""MazeSolver class."""
 
 import random
 
+__author__ = "Aaron Bunch"
+__date__ = "Jan 9, 2018"
+
 class MazeSolver:
-    """docstring here"""
+    """
+    Find the shortest path through a maze.
+
+    Public method:
+        solve_maze(n=20):   Solve the maze n times and return the shortest path 
+                            marked on the original maze.
+    Instance variables:
+        original_maze:      A list of strings representing the maze as it was
+                            loaded from its source file.
+        solution_lengths:   A list of the path-lengths of the solutions.
+        solutions:          A list of solutions to the maze. Each solution is
+                            a single path from start to destination. All other
+                            paths are filled in.
+        shortest_solution:  The solution with the shortest path.
+        blazed_trail:       The shortest solution marked onto the original maze.
+    """
 
     def __init__(self, filename, source_wall='0', source_path='1',
                  source_start='S', source_dest='D'):
-        """docstring here"""
+        """
+        Construct a MazeSolver object.
 
+        Args:
+            filename: The name of the text file containing the maze.
+
+        Keyword Args:
+            source_wall:    The wall character in the source file.
+            source_path:    The path character in the source file.
+            source_start:   The start character in the source file.
+            source_dest:    The destination character in the source file.
+        """
         self.wall = '\u2588'
         self.path = ' '
         self.start = 'S'
@@ -26,8 +51,8 @@ class MazeSolver:
         self.verify_maze()
 
     def get_original_maze(self):
-        """docstring here"""
-
+        """Load the maze and convert to internal wall and path characters."""
+        
         with open(self.filename) as f:
             self.original_maze = f.readlines()
         self.original_maze = [row.rstrip() for row in self.original_maze]
@@ -37,7 +62,10 @@ class MazeSolver:
                               for row in self.original_maze]
 
     def verify_maze(self):
-        """docstring here"""
+        """Verify that the loaded maze is in the correct format.
+        
+           Quits with a message if there is a problem. 
+        """
 
         # check for start and destination
         self.S_row, self.S_col = self.find_char(self.original_maze, 'S')
@@ -67,7 +95,11 @@ class MazeSolver:
             self.original_maze = [row+self.wall for row in self.original_maze]
 
     def find_char(self, maze, char):
-        """docstring here"""
+        """Find a given character in the maze.
+       
+           Returns:
+               row, column of the character
+           """
 
         char_row = None
         char_col = None
@@ -79,7 +111,7 @@ class MazeSolver:
         return char_row, char_col
 
     def count_char(self, maze, char):
-        """docstring here"""
+        """Count the number of a given character in the maze."""
 
         num = 0
         for row in range(1, len(maze)-1):
@@ -89,7 +121,11 @@ class MazeSolver:
         return num
 
     def num_branches(self, maze):
-        """docstring here"""
+        """Count the number of path branches in the maze.
+        
+           Calls is_branch() method. A branch is any path location with
+           open paths on at least three sides.
+        """
 
         num = 0
         for row in range(1, len(maze)-1):
@@ -99,7 +135,11 @@ class MazeSolver:
         return num
 
     def insert_char(self, maze, row, col, char):
-        """docstring"""
+        """Insert a character into a maze at a specified row and column.
+        
+           Returns:
+               The maze with the inserted character.
+        """
 
         temp_list = list(maze[row])
         temp_list[col] = char
@@ -107,7 +147,11 @@ class MazeSolver:
         return maze
 
     def get_paths(self, maze, row, col):
-        """docstring"""
+        """Find the open paths at a point in a maze.
+        
+           Returns:
+               A boolean for each direction
+        """
 
         path_north = False
         path_south = False
@@ -125,7 +169,11 @@ class MazeSolver:
         return path_north, path_south, path_east, path_west
 
     def is_dead_end(self, maze, row, col):
-        """docstring"""
+        """Determine if a point in the maze is a dead-end.
+        
+           A dead-end is any path location with an open path in only one
+           direction.
+        """
 
         paths = self.get_paths(maze, row, col)
         num_paths = sum([1 for p in paths if p])
@@ -136,7 +184,11 @@ class MazeSolver:
             return False
 
     def is_walled_in(self, maze, row, col):
-        """docstring"""
+        """Determine if a maze location is surrounded entirely by walls.
+        
+           This is used to filter out spurious solutions, in which the
+           start and destination are completely walled in.
+        """
 
         paths = self.get_paths(maze, row, col)
         if any(paths):
@@ -145,7 +197,11 @@ class MazeSolver:
             return True
 
     def is_branch(self, maze, row, col):
-        """docstring"""
+        """Determine if a maze location is branch in the path.
+        
+           A branch is any path location that has open paths on at least
+           three sides.
+        """
 
         paths = self.get_paths(maze, row, col)
         num_paths = sum([1 for path in paths if path])
@@ -156,7 +212,11 @@ class MazeSolver:
             return False
 
     def fill_in_dead_ends(self, maze):
-        """docstring"""
+        """Fill in all dead-end paths with wall.
+        
+           Returns:
+               The maze with no dead-end paths.
+        """
 
         dead_ends = True
         while dead_ends:
@@ -191,7 +251,15 @@ class MazeSolver:
         return row, col
 
     def break_loop(self, maze, turn='right'):
-        """docstring"""
+        """Find a loop in the maze, and break it by inserting a wall.
+        
+           The loop is recognized when the walker returns to a branch.
+           The loop is broken by walling off the branch behind the walker.
+           
+           Returns:
+               False, if no loop is found.
+               The maze with the loop broken, if a loop is found.
+        """
 
         # start at S
         row, col = self.S_row, self.S_col
@@ -245,7 +313,7 @@ class MazeSolver:
             # if we are starting at S, and there is more than one open path
             # (S is a branch, for instance), then:
             # 1) if we are turning randomly right and left, then choose our
-            #    starting directly randomly
+            #    starting direction randomly
             # 2) if we are consistently turning right, then choose the first
             #    open path clockwise from north
             # 3) if we are consistently turning left, then choose the first
@@ -380,7 +448,7 @@ class MazeSolver:
             paths = [path_north, path_south, path_east, path_west]
 
     def blaze_trail(self):
-        """docstring"""
+        """Mark the solution on the original maze."""
 
         working_maze = self.original_maze[:]
         for row in range(1, len(working_maze)-1):
@@ -391,7 +459,7 @@ class MazeSolver:
         self.blazed_trail = working_maze
 
     def solve_maze(self, n=20):
-        """docstring"""
+        """Solve the maze n times, and return the shortest solution."""
 
         self.solutions = []
         self.solution_lengths = []
