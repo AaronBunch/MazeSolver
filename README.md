@@ -48,7 +48,7 @@ finish marked on the original maze.
 
 3. MazeSolver.solutions:  A list of all solutions found by the
 walker (there may be fewer than n, because spurious solutions are
-omitted). Each solution is marked on the original maze.
+omitted).
                       
 5. MazeSolver.solution_lengths:  A list of the lengths of all solutions
 found by the walker (excluding the spurious solutions).
