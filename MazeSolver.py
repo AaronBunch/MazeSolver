@@ -555,7 +555,6 @@ class MazeSolver:
                     working_maze = broken_loop[:]
                     working_maze = self.fill_in_dead_ends(working_maze)
                 num = self.num_branches(working_maze)
-
             # filter out spurious solutions where S and/or D are completely walled
             # in (there is no path between S and D)
             if (not self.is_walled_in(working_maze, self.S_row, self.S_col) and
@@ -563,6 +562,9 @@ class MazeSolver:
                 self.solutions.append(working_maze)
                 self.solution_lengths.append(self.count_char(working_maze,
                     self.path))
+                print(self.solution_lengths[-1], end=' ', flush=True)
+            else:
+                print('*', end=' ', flush=True)
         # mark the solutions on the original maze
         for i, solution in enumerate(self.solutions):
             self.solutions[i] = self.blaze_trail(solution)
