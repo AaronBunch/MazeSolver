@@ -307,18 +307,22 @@ class MazeSolver:
         col -= 1
         return row, col
 
-    def break_loop(self, maze, turn='right'):
+    def break_loop(self, maze, max_steps=1000, turn='right'):
         """Find a loop in the maze, and break it by inserting a wall.
         
         The loop is recognized when the walker returns to a branch.
         The loop is broken by walling off the branch behind the walker.
           
         Args:
-            maze:   a list of strings
+            maze:        a list of strings
 
         Keyword Args:
-            turn:   determines whether the maze walker turns right,
-                    left, or randomly at branches in the path
+            max_steps:   maximum number of steps to take when looking
+                         for a loop (avoids infinite loops with no
+                         branches; may need to be increased for more
+                         complicated mazes)
+            turn:        determines whether the maze walker turns right,
+                         left, or randomly at branches in the path
 
         Returns:
             False, if no loop is found.
@@ -331,10 +335,11 @@ class MazeSolver:
         paths = [path_north, path_south, path_east, path_west]
         prev_row, prev_col = None, None
         branches = []
-        # when D is not a dead-end, use seen_D to avoid an infinite loop
+        # when D is not a dead-end, use seen_D to avoid infinite loops
         seen_D = False 
-
-        while True:
+        # count the number of steps taken while looking for a loop
+        num_steps = 0
+        while num_steps < max_steps:
 
             if turn == 'random':
                 this_turn = random.choice(['right', 'left'])
@@ -510,6 +515,11 @@ class MazeSolver:
             path_north, path_south, path_east, path_west = self.get_paths(maze,
                     row, col)
             paths = [path_north, path_south, path_east, path_west]
+            # increment the step counter
+            num_steps += 1
+        # max_steps exceeded
+        print('ms', end=' ', flush=True)
+        return False
 
     def blaze_trail(self, solution):
         """Mark the solution on the original maze.
@@ -530,12 +540,15 @@ class MazeSolver:
                                                     row, col, self.blaze)
         return blazed_trail 
 
-    def solve_maze(self, n=50):
+    def solve_maze(self, n=50, max_steps=1000):
         """Solve the maze n times, and return the shortest solution.
         
         Keyword Args:
-            n:  number of times to solve the maze
-            
+            n:          number of times to solve the maze
+            max_steps:  the maximum number of steps to take when looking for
+                        a loop (avoids infinite loops with no branches; may
+                        need to be increased for more complicated mazes)
+
         Returns:
             The shortest path from start to finish marked onto the original
             maze.
@@ -548,13 +561,14 @@ class MazeSolver:
             working_maze = self.fill_in_dead_ends(working_maze)
             # walk the maze turning randomly at branches until there are no more
             # loops
-            num = self.num_branches(working_maze)
-            while num > 0:
-                broken_loop = self.break_loop(working_maze, turn='random')
+            num_branches = self.num_branches(working_maze)
+            while num_branches > 0:
+                broken_loop = self.break_loop(working_maze, max_steps=max_steps,
+                                              turn='random')
                 if broken_loop:
                     working_maze = broken_loop[:]
                     working_maze = self.fill_in_dead_ends(working_maze)
-                num = self.num_branches(working_maze)
+                num_branches = self.num_branches(working_maze)
             # filter out spurious solutions where S and/or D are completely walled
             # in (there is no path between S and D)
             if (not self.is_walled_in(working_maze, self.S_row, self.S_col) and
