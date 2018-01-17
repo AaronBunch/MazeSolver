@@ -36,9 +36,16 @@ destination. If there is no border wall around the maze, one
 is added. See the test mazes in this repository. A small maze
 template is also provided.
 
-The solve_maze() method returns the original maze marked with the
-shortest path from start to finish. After solve_maze() is called,
-the MazeSolver object has the following attributes:
+The solve_maze() method returns the original maze marked with the shortest path
+from start to finish. As a progress indicator, it prints to the screen the path
+length of each solution as it finds it, or an asterisk indicating a spurious
+solution (no path from start to destination). 'ms' means that the maximum number
+of steps was reached while looking for a loop. This typically indicates that the
+walker has been caught in an infinite loop (a looping path with no branches).
+But it may also mean that the maze is very complex, and max_steps should be
+increased.
+
+After solve_maze() is called, the MazeSolver object has the following attributes:
 
 1. MazeSolver.original_maze:  This is available as soon as the object
 is initialized.
