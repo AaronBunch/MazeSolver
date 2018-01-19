@@ -318,9 +318,7 @@ class MazeSolver:
 
         Keyword Args:
             max_steps:   maximum number of steps to take when looking
-                         for a loop (avoids infinite loops with no
-                         branches; may need to be increased for more
-                         complicated mazes)
+                         for a loop
             turn:        determines whether the maze walker turns right,
                          left, or randomly at branches in the path
 
@@ -517,6 +515,7 @@ class MazeSolver:
             paths = [path_north, path_south, path_east, path_west]
             # increment the step counter
             num_steps += 1
+
         # max_steps exceeded
         print('ms', end=' ', flush=True)
         return False
@@ -587,6 +586,7 @@ class MazeSolver:
         # want to import numpy.argmin just for this one line
         self.shortest_solution = self.solutions[
             self.solution_lengths.index(min(self.solution_lengths))]
+        print('\n')
         return self.shortest_solution
 
 
