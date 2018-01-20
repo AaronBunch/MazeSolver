@@ -21,12 +21,9 @@ class MazeSolver:
         shortest_solution:  The solution with the shortest path.
     """
 
-    def __init__(self, filename, source_wall='0', source_path='1',
+    def __init__(self, source_wall='0', source_path='1',
                  source_start='S', source_dest='D'):
         """Construct a MazeSolver object.
-
-        Args:
-            filename:       The name of the text file containing the maze.
 
         Keyword Args:
             source_wall:    The wall character in the source file.
@@ -39,60 +36,76 @@ class MazeSolver:
         self.start = 'S'
         self.dest = 'D'
         self.blaze = '\u00B7'
-        self.filename = filename
         self.source_wall = source_wall
         self.source_path = source_path
         self.source_start = source_start
         self.source_dest = source_dest
-        self.get_original_maze()
-        self.verify_maze()
 
-    def get_original_maze(self):
-        """Load the maze and convert to internal wall and path characters."""
+    def get_maze(self, filename, return_maze=False):
+        """Load the maze and convert to internal wall and path characters.
         
-        with open(self.filename) as f:
-            self.original_maze = f.readlines()
-        self.original_maze = [row.rstrip() for row in self.original_maze]
-        self.original_maze = [row.replace(self.source_wall, self.wall)
-                              for row in self.original_maze]
-        self.original_maze = [row.replace(self.source_path, self.path)
-                              for row in self.original_maze]
+        Args:
+            filename:   name of source file
+        
+        Returns:
+            maze:       a list of strings, source file characters converted
+                        to internal wall and path characters,
+                        if return_maze=True
+        """
+        
+        with open(filename) as f:
+            maze = f.readlines()
+        maze = [row.rstrip() for row in maze]
+        maze = [row.replace(self.source_wall, self.wall) for row in maze]
+        maze = [row.replace(self.source_path, self.path) for row in maze]
+        self.original_maze = maze
+        if return_maze == True:
+            return maze
 
-    def verify_maze(self):
+    def verify_maze(self, return_maze=False):
         """Verify that the loaded maze is in the correct format.
         
         The maze must have start and destination characters; it must be
         rectangular (all rows of equal length); and if it does not have
         a border wall, one is added silently. Quits with a message if there
-        is a problem. 
+        is a problem.
+
+        Returns:
+            maze:   if return_maze=True
         """
 
         # check for start and destination
         self.S_row, self.S_col = self.find_char(self.original_maze, 'S')
         self.D_row, self.D_col = self.find_char(self.original_maze, 'D')
         if (self.S_row is None) or (self.D_row is None):
-            print('\nThe maze must have both a\n')
-            print('start and a destination.\n')
+            print('\nBoth a start and a destination must be\n')
+            print('indicated on the maze.\n')
             quit()
         # check for rectangularity
         row_lengths = []
         for row in self.original_maze:
             row_lengths.append(len(row))
         if len(set(row_lengths)) > 1:
-            print('\nThe maze must have rows\n')
-            print('of equal length.\n')
+            print('\nThe maze must have rows of equal length.\n')
             quit()
-        # check for border wall; insert one if necessary
-        if ((len(set(self.original_maze[0])) > 1) or
-            (len(set(self.original_maze[-1])) > 1) or
-            (len(set([row[0] for row in self.original_maze])) > 1) or
-            (len(set([row[-1] for row in self.original_maze])) > 1)):
+        # check for border walls; insert them as necessary
+        # check top wall
+        if len(set(self.original_maze[0])) > 1:
             self.original_maze.insert(0,
                     self.wall*(len(self.original_maze[0])))
-            self.original_maze.insert(-1,
+        # check bottom wall
+        if len(set(self.original_maze[-1])) > 1:
+            self.original_maze.append(
                     self.wall*(len(self.original_maze[-1])))
+        # check left wall
+        if len(set([row[0] for row in self.original_maze])) > 1:
             self.original_maze = [self.wall+row for row in self.original_maze]
+        # check right wall
+        if len(set([row[-1] for row in self.original_maze])) > 1:
             self.original_maze = [row+self.wall for row in self.original_maze]
+
+        if return_maze == True:
+            return self.original_maze
 
     def find_char(self, maze, char):
         """Find a given character in the maze.
@@ -107,8 +120,8 @@ class MazeSolver:
 
         char_row = None
         char_col = None
-        for row in range(1, len(maze)-1):
-            for col in range(1, len(maze[row])-1):
+        for row in range(0, len(maze)):
+            for col in range(0, len(maze[row])):
                 if maze[row][col] == char:
                     char_row = row
                     char_col = col
