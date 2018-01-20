@@ -26,9 +26,11 @@ default) and pick the shortest real solution.
 
 ## Use
 ```python
-from MazeSolver import MazeSolver as ms
-maze1 = ms('test_maze_1.txt')
-maze1.solve_maze()
+from MazeSolver import MazeSolver
+maze = MazeSolver()
+maze.get_maze(filename)
+maze.verify_maze()
+maze.solve_maze()
 ```
 The maze file should be a text file with lines of equal length.
 By default 0 -> wall, 1 -> path, 'S' -> start, and 'D' ->
