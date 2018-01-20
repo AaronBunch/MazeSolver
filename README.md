@@ -32,11 +32,13 @@ maze.get_maze(filename)
 maze.verify_maze()
 maze.solve_maze()
 ```
-The maze file should be a text file with lines of equal length.
-By default 0 -> wall, 1 -> path, 'S' -> start, and 'D' ->
-destination. If there is no border wall around the maze, one
-is added. See the test mazes in this repository. A small maze
-template is also provided.
+The maze file should be a text file with lines of equal length, and exactly one
+start and one destination character.  By default 0 -> wall, 1 -> path, 'S' ->
+start, and 'D' -> destination. These defaults can be changed with keyword
+arguments when the MazeSolver object is instantiated. The maze should be
+completely bordered by wall. If a border wall is missing, one is silently added.
+See test mazes 'test_maze_10\*.txt' in this repository. Maze templates of
+various sizes are provided.
 
 The solve_maze() method returns the original maze marked with the shortest path
 from start to finish. As a progress indicator, it prints to the screen the path
