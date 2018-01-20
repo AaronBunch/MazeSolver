@@ -1,5 +1,6 @@
 """MazeSolver class."""
 
+import sys
 import random
 
 __author__ = "Aaron Bunch"
@@ -78,16 +79,20 @@ class MazeSolver:
         self.S_row, self.S_col = self.find_char(self.original_maze, 'S')
         self.D_row, self.D_col = self.find_char(self.original_maze, 'D')
         if (self.S_row is None) or (self.D_row is None):
-            print('\nBoth a start and a destination must be\n')
-            print('indicated on the maze.\n')
-            quit()
+            print("""
+                    Both a start and a destination
+                    must be indicated on the maze.
+                  """)
+            return
         # check for rectangularity
         row_lengths = []
         for row in self.original_maze:
             row_lengths.append(len(row))
         if len(set(row_lengths)) > 1:
-            print('\nThe maze must have rows of equal length.\n')
-            quit()
+            print("""
+                    The maze must have rows of equal length.
+                  """)
+            return
         # check for border walls; insert them as necessary
         # check top wall
         if len(set(self.original_maze[0])) > 1:
