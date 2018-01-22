@@ -66,24 +66,38 @@ class MazeSolver:
     def verify_maze(self, return_maze=False):
         """Verify that the loaded maze is in the correct format.
         
-        The maze must have start and destination characters; it must be
-        rectangular (all rows of equal length); and if it does not have
-        a border wall, one is added silently. Quits with a message if there
-        is a problem.
+        The maze must have exactly one start and one destination character; it
+        must be rectangular (all rows of equal length); and if a border wall is
+        missing, one is silently added. Prints a message and returns nothing if
+        there is a problem.
 
         Returns:
             maze:   if return_maze=True
         """
 
-        # check for start and destination
+        # get start and destination positions
         self.S_row, self.S_col = self.find_char(self.original_maze, 'S')
         self.D_row, self.D_col = self.find_char(self.original_maze, 'D')
-        if (self.S_row is None) or (self.D_row is None):
+        # check for multiple starts or destinations
+        if (len(self.S_row) > 1) or (len(self.D_row) > 1):
+            print("""
+                    The maze may contain only one start,
+                    and one destination.
+                  """)
+            return
+        # check for no start or no destination
+        if (len(self.S_row) == 0) or (len(self.D_row) == 0):
             print("""
                     Both a start and a destination
                     must be indicated on the maze.
                   """)
             return
+
+        self.S_row = self.S_row[0]
+        self.S_col = self.S_col[0]
+        self.D_row = self.D_row[0]
+        self.D_col = self.D_col[0]
+        
         # check for rectangularity
         row_lengths = []
         for row in self.original_maze:
@@ -93,6 +107,7 @@ class MazeSolver:
                     The maze must have rows of equal length.
                   """)
             return
+
         # check for border walls; insert them as necessary
         # check top wall
         if len(set(self.original_maze[0])) > 1:
@@ -120,18 +135,19 @@ class MazeSolver:
             char:   the character to find
 
         Returns:
-            row, column of the character
+            char_row:   list of rows
+            char_col:   list of columns
         """
 
-        char_row = None
-        char_col = None
+        char_row = []
+        char_col = []
         for row in range(0, len(maze)):
             for col in range(0, len(maze[row])):
                 if maze[row][col] == char:
-                    char_row = row
-                    char_col = col
+                    char_row.append(row)
+                    char_col.append(col)
         return char_row, char_col
-
+ 
     def count_char(self, maze, char):
         """Count the number of a given character in the maze.
        
@@ -144,8 +160,8 @@ class MazeSolver:
         """
 
         count = 0
-        for row in range(1, len(maze)-1):
-            for col in range(1, len(maze[row])-1):
+        for row in range(0, len(maze)):
+            for col in range(0, len(maze[row])):
                 if maze[row][col] == char:
                     count += 1
         return count
@@ -190,7 +206,12 @@ class MazeSolver:
 
     def get_paths(self, maze, row, col):
         """Find the open paths at a position in a maze.
-       
+      
+        Paths that step off the border of the maze are not open.
+        
+        (The way this is implemented now, the maze can probably have a ragged
+        right edge. But that still needs to be tested.)
+
         Args:
             maze:   a list of strings
             row:    the row number (int)
@@ -206,14 +227,28 @@ class MazeSolver:
         path_east = False
         path_west = False
 
-        if maze[row-1][col] != self.wall:
+        try: 
+            if maze[row+1][col] != self.wall:
+                path_south = True
+        except IndexError:
+            pass
+        try:
+            if maze[row][col+1] != self.wall:
+                path_east = True
+        except IndexError:
+            pass
+
+        ######################################################################
+        # We have to handle row[0] and col[0] differently, because row[-1] and
+        # col[-1] will not raise an IndexError (they will point to the end of
+        # the list).
+        ######################################################################
+
+        if (row != 0) and (maze[row-1][col] != self.wall):
             path_north = True
-        if maze[row+1][col] != self.wall:
-            path_south = True
-        if maze[row][col+1] != self.wall:
-            path_east = True
-        if maze[row][col-1] != self.wall:
+        if (col != 0) and (maze[row][col-1] != self.wall):
             path_west = True
+
         return path_north, path_south, path_east, path_west
 
     def is_dead_end(self, maze, row, col):
@@ -285,7 +320,10 @@ class MazeSolver:
 
     def fill_in_dead_ends(self, maze):
         """Fill in all dead-ends with wall.
-       
+      
+        Does not fill in start or destination tiles if these happen to
+        lie at dead-ends.
+
         Args:
             maze:   a list of strings 
 
@@ -296,14 +334,30 @@ class MazeSolver:
         dead_ends = True
         while dead_ends:
             dead_ends = False
-            # working with indices, excluding the border of the maze
-            for row in range(1, len(maze)-1):
-                for col in range(1, len(maze[row])-1):
+            for row in range(0, len(maze)):
+                for col in range(0, len(maze[row])):
                     if (maze[row][col] == self.path and
                         self.is_dead_end(maze, row, col)):
                         maze = self.insert_char(maze, row, col, self.wall)
                         dead_ends = True
         return maze
+
+    def count_dead_ends(self, maze):
+        """Counts the number of dead-ends in the maze. 
+
+        Args:
+            maze:   a list of strings
+
+        Returns:
+            count:  the number of dead-ends in the maze
+        """
+
+        count = 0
+        for row in range(0, len(maze)):
+            for col in range(0, len(maze[row])):
+                if self.is_dead_end(maze, row, col):
+                    count += 1
+        return count
 
     @staticmethod
     def move_north(row, col):
