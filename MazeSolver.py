@@ -72,7 +72,7 @@ class MazeSolver:
         there is a problem.
 
         Returns:
-            maze:   if return_maze=True
+            maze:   if return_maze==True
         """
 
         # get start and destination positions
@@ -80,19 +80,22 @@ class MazeSolver:
         self.D_row, self.D_col = self.find_char(self.original_maze, 'D')
         # check for multiple starts or destinations
         if (len(self.S_row) > 1) or (len(self.D_row) > 1):
-            print("""
-                    The maze may contain only one start,
-                    and one destination.
-                  """)
+            if not return_maze:
+                print("""
+                        The maze may contain only one start,
+                        and one destination.
+                      """)
             return
         # check for no start or no destination
         if (len(self.S_row) == 0) or (len(self.D_row) == 0):
-            print("""
-                    Both a start and a destination
-                    must be indicated on the maze.
-                  """)
+            if not return_maze:
+                print("""
+                        Both a start and a destination
+                        must be indicated on the maze.
+                      """)
             return
 
+        # find_char() returns a list; we want only the first element for S and D
         self.S_row = self.S_row[0]
         self.S_col = self.S_col[0]
         self.D_row = self.D_row[0]
@@ -103,9 +106,10 @@ class MazeSolver:
         for row in self.original_maze:
             row_lengths.append(len(row))
         if len(set(row_lengths)) > 1:
-            print("""
-                    The maze must have rows of equal length.
-                  """)
+            if not return_maze:
+                print("""
+                        The maze must have rows of equal length.
+                      """)
             return
 
         # check for border walls; insert them as necessary
@@ -379,7 +383,166 @@ class MazeSolver:
         col -= 1
         return row, col
 
-    def break_loop(self, maze, max_steps=1000, turn='right'):
+    def take_first_step(self, row, col, paths, turn):
+        """Takes the first step in the maze.
+
+        If we are starting at S, and there is more than one open path
+        (S is a branch, for instance), then:
+        1) If we are turning randomly right and left, then choose our
+           starting direction randomly.
+        2) If we are consistently turning right, then choose the first
+           open path clockwise from north.
+        3) If we are consistently turning left, then choose the first
+           open path clockwise from south.
+
+        Args:
+            row:        current row (int)
+            col:        current col (int)
+            paths:      [path_north, path_south, path_east, past_west]
+            turn:       the direction to turn at branches
+
+        Returns:
+            row:        the new row
+            col:        the new column
+        """
+
+        path_north, path_south, path_east, path_west = paths
+
+        if turn == 'random':
+            no_path = True
+            while no_path:
+                # repeat until we randomly choose an open path
+                direction = random.choice(['path_north', 'path_south',
+                                           'path_east', 'path_west'])
+                if (direction == 'path_north') and (path_north):
+                    row, col = MazeSolver.move_north(row, col)
+                    no_path = False
+                elif (direction == 'path_south') and (path_south):
+                    row, col = MazeSolver.move_south(row, col)
+                    no_path = False
+                elif (direction == 'path_east') and (path_east):
+                    row, col = MazeSolver.move_east(row, col)
+                    no_path = False
+                elif (direction == 'path_west') and (path_west):
+                    row, col = MazeSolver.move_west(row, col)
+                    no_path = False
+        elif turn == 'right':
+            if path_north:
+                row, col = MazeSolver.move_north(row, col)
+            elif path_east:
+                row, col = MazeSolver.move_east(row, col)
+            elif path_south:
+                row, col = MazeSolver.move_south(row, col)
+            else:
+                row, col = MazeSolver.move_west(row, col)
+        else:
+            # turn == 'left'
+            if path_south:
+                row, col = MazeSolver.move_south(row, col)
+            elif path_west:
+                row, col = MazeSolver.move_west(row, col)
+            elif path_north:
+                row, col = MazeSolver.move_north(row, col)
+            else:
+                row, col = MazeSolver.move_east(row, col)
+        return row, col
+
+    def take_step(self, row, col, prev_row, prev_col, paths, turn):
+        """Takes a step in the maze.
+
+        Args:
+            row:        current row (int)
+            col:        current col (int)
+            prev_row:   the previous row (int)
+            prev_col:   the previous column (int)
+            paths:      [path_north, path_south, path_east, past_west]
+            turn:       the direction to turn at branches
+
+        Returns:
+            row:        the new row (int)
+            col:        the new column (int)
+            prev_row:   the new previous row
+            prev_col:   the new previous column
+        """
+        
+        path_north, path_south, path_east, path_west = paths
+
+        temp_row = row
+        temp_col = col
+        if (prev_row == row) and (col > prev_col):
+            # coming from the west
+            if turn == 'right':
+                if path_south:
+                    row, col = MazeSolver.move_south(row, col)
+                elif path_east:
+                    row, col = MazeSolver.move_east(row, col)
+                else:
+                    row, col = MazeSolver.move_north(row, col)
+            else:
+                # turn == 'left'
+                if path_north:
+                    row, col = MazeSolver.move_north(row, col)
+                elif path_east:
+                    row, col = MazeSolver.move_east(row, col)
+                else:
+                    row, col = MazeSolver.move_south(row, col)
+        elif (prev_row == row) and (col < prev_col):
+            # coming from the east
+            if turn == 'right':
+                if path_north:
+                    row, col = MazeSolver.move_north(row, col)
+                elif path_west:
+                    row, col = MazeSolver.move_west(row, col)
+                else:
+                    row, col = MazeSolver.move_south(row, col)
+            else:
+                # turn == 'left'
+                if path_south:
+                    row, col = MazeSolver.move_south(row, col)
+                elif path_west:
+                    row, col = MazeSolver.move_west(row, col)
+                else:
+                    row, col = MazeSolver.move_north(row, col)
+        elif (prev_col == col) and (row > prev_row):
+            # coming from the north
+            if turn == 'right':
+                if path_west:
+                    row, col = MazeSolver.move_west(row, col)
+                elif path_south:
+                    row, col = MazeSolver.move_south(row, col)
+                else:
+                    row, col = MazeSolver.move_east(row, col)
+            else:
+                # turn == 'left'
+                if path_east:
+                    row, col = MazeSolver.move_east(row, col)
+                elif path_south:
+                    row, col = MazeSolver.move_south(row, col)
+                else:
+                    row, col = MazeSolver.move_west(row, col)
+        else:
+            # coming from the south
+            if turn == 'right':
+                if path_east:
+                    row, col = MazeSolver.move_east(row, col)
+                elif path_north:
+                    row, col = MazeSolver.move_north(row, col)
+                else:
+                    row, col = MazeSolver.move_west(row, col)
+            else:
+                # turn == 'left'
+                if path_west:
+                    row, col = MazeSolver.move_west(row, col)
+                elif path_north:
+                    row, col = MazeSolver.move_north(row, col)
+                else:
+                    row, col = MazeSolver.move_east(row, col)
+        prev_row = temp_row
+        prev_col = temp_col
+
+        return row, col, prev_row, prev_col
+
+    def break_loop(self, maze, max_steps=1000, turn='random'):
         """Find a loop in the maze, and break it by inserting a wall.
         
         The loop is recognized when the walker returns to a branch.
@@ -401,25 +564,43 @@ class MazeSolver:
 
         # start at S
         row, col = self.S_row, self.S_col
-        path_north, path_south, path_east, path_west = self.get_paths(maze, row, col)
+        path_north, path_south, path_east, path_west = self.get_paths(maze,
+                row, col)
         paths = [path_north, path_south, path_east, path_west]
         prev_row, prev_col = None, None
         branches = []
-        # when D is not a dead-end, use seen_D to avoid infinite loops
+        # when S and/or D are not dead-ends, use seen_S and seen_D to avoid
+        # infinite loops
+        seen_S = False
         seen_D = False 
         # count the number of steps taken while looking for a loop
         num_steps = 0
         while num_steps < max_steps:
-
             if turn == 'random':
                 this_turn = random.choice(['right', 'left'])
             else:
                 this_turn = turn
 
-            #####################################################
-            # Check if the current location is the destination, #
-            # the base of a loop, or a branch not seen before.  #
-            #####################################################
+            ################################################################
+            # Check if the current location is the start, the destination, #
+            # the base of a loop, or a branch not seen before.             #
+            ################################################################
+
+            # check if we are returning to the start
+            if prev_row is not None: # do not check when first starting out
+                if (row, col) == (self.S_row, self.S_col):
+                    # if we have returned to S in a dead-end, return
+                    if self.is_dead_end(maze, row, col):
+                        return False
+                    else:
+                        # if we are returning to S for the second time,
+                        # start over
+                        if seen_S is True: 
+                            return False
+                        # if we are returning to S for the first time,
+                        # keep going
+                        else:
+                            seen_S = True
 
             # check if we are at the destination
             if (row, col) == (self.D_row, self.D_col):
@@ -449,141 +630,20 @@ class MazeSolver:
             # Take a step #
             ###############
 
-            # if we are starting at S, and there is more than one open path
-            # (S is a branch, for instance), then:
-            # 1) if we are turning randomly right and left, then choose our
-            #    starting direction randomly
-            # 2) if we are consistently turning right, then choose the first
-            #    open path clockwise from north
-            # 3) if we are consistently turning left, then choose the first
-            #    open path clockwise from south
-
+            # if we are just starting out, there special rules for how to
+            # take the first step
             if (prev_row, prev_col) == (None, None):
                 prev_row = row
                 prev_col = col
-
-                if turn == 'random':
-                    flag = True
-                    while flag:
-                        # repeat until we randomly choose an open path
-                        direction = random.choice(['path_north', 'path_south',
-                                                   'path_east', 'path_west'])
-                        if (direction == 'path_north') and (path_north):
-                            row, col = MazeSolver.move_north(row, col)
-                            flag = False
-                        elif (direction == 'path_south') and (path_south):
-                            row, col = MazeSolver.move_south(row, col)
-                            flag = False
-                        elif (direction == 'path_east') and (path_east):
-                            row, col = MazeSolver.move_east(row, col)
-                            flag = False
-                        elif (direction == 'path_west') and (path_west):
-                            row, col = MazeSolver.move_west(row, col)
-                            flag = False
-
-                elif turn == 'right':
-                    if path_north:
-                        row, col = MazeSolver.move_north(row, col)
-                    elif path_east:
-                        row, col = MazeSolver.move_east(row, col)
-                    elif path_south:
-                        row, col = MazeSolver.move_south(row, col)
-                    else:
-                        row, col = MazeSolver.move_west(row, col)
-
-                else:
-                    # turn == 'left'
-                    if path_south:
-                        row, col = MazeSolver.move_south(row, col)
-                    elif path_west:
-                        row, col = MazeSolver.move_west(row, col)
-                    elif path_north:
-                        row, col = MazeSolver.move_north(row, col)
-                    else:
-                        row, col = MazeSolver.move_east(row, col)
-
-            # otherwise take the first open path without back-tracking;
-            # to avoid back-tracking, and to determine the walker's left
-            # and right, we keep track of the walker's previous location
-            # (the direction the walker has come from)
-
+                row, col = self.take_first_step(row, col, paths, this_turn)
+            # otherwise take the first open path without back-tracking
             else:
-                temp_row = row
-                temp_col = col
-                if (prev_row == row) and (col > prev_col):
-                    # coming from the west
-                    if this_turn == 'right':
-                        if path_south:
-                            row, col = MazeSolver.move_south(row, col)
-                        elif path_east:
-                            row, col = MazeSolver.move_east(row, col)
-                        else:
-                            row, col = MazeSolver.move_north(row, col)
-                    else:
-                        # turn == 'left'
-                        if path_north:
-                            row, col = MazeSolver.move_north(row, col)
-                        elif path_east:
-                            row, col = MazeSolver.move_east(row, col)
-                        else:
-                            row, col = MazeSolver.move_south(row, col)
-                elif (prev_row == row) and (col < prev_col):
-                    # coming from the east
-                    if this_turn == 'right':
-                        if path_north:
-                            row, col = MazeSolver.move_north(row, col)
-                        elif path_west:
-                            row, col = MazeSolver.move_west(row, col)
-                        else:
-                            row, col = MazeSolver.move_south(row, col)
-                    else:
-                        # turn == 'left'
-                        if path_south:
-                            row, col = MazeSolver.move_south(row, col)
-                        elif path_west:
-                            row, col = MazeSolver.move_west(row, col)
-                        else:
-                            row, col = MazeSolver.move_north(row, col)
-                elif (prev_col == col) and (row > prev_row):
-                    # coming from the north
-                    if this_turn == 'right':
-                        if path_west:
-                            row, col = MazeSolver.move_west(row, col)
-                        elif path_south:
-                            row, col = MazeSolver.move_south(row, col)
-                        else:
-                            row, col = MazeSolver.move_east(row, col)
-                    else:
-                        # turn == 'left'
-                        if path_east:
-                            row, col = MazeSolver.move_east(row, col)
-                        elif path_south:
-                            row, col = MazeSolver.move_south(row, col)
-                        else:
-                            row, col = MazeSolver.move_west(row, col)
-                else:
-                    # coming from the south
-                    if this_turn == 'right':
-                        if path_east:
-                            row, col = MazeSolver.move_east(row, col)
-                        elif path_north:
-                            row, col = MazeSolver.move_north(row, col)
-                        else:
-                            row, col = MazeSolver.move_west(row, col)
-                    else:
-                        # turn == 'left'
-                        if path_west:
-                            row, col = MazeSolver.move_west(row, col)
-                        elif path_north:
-                            row, col = MazeSolver.move_north(row, col)
-                        else:
-                            row, col = MazeSolver.move_east(row, col)
-                prev_row = temp_row
-                prev_col = temp_col
-
+                row, col, prev_row, prev_col = self.take_step(row, col,
+                                               prev_row, prev_col, paths,
+                                               this_turn)
             # get open paths at new position
             path_north, path_south, path_east, path_west = self.get_paths(maze,
-                    row, col)
+                                                           row, col)
             paths = [path_north, path_south, path_east, path_west]
             # increment the step counter
             num_steps += 1
