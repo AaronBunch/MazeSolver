@@ -411,6 +411,133 @@ class MazeSolverTestCase(unittest.TestCase):
         self.assertTrue(new_row == row)
         self.assertTrue(new_col == col-1)
 
+    def test_take_first_step(self):
+        """Correctly takes first step in the maze."""
+
+        row, col = (2, 3)
+        filename = "test_mazes/test_maze_016.txt"
+        maze = self.ms.get_maze(filename, return_maze=True)
+        paths = self.ms.get_paths(maze, row, col)
+        turn = 'right'
+        # should step north
+        correct_row, correct_col = (1, 3)
+        test_row, test_col = self.ms.take_first_step(row, col, paths, turn)
+        self.assertEqual((correct_row, correct_col), (test_row, test_col))
+        turn = 'left'
+        # should step south
+        correct_row, correct_col = (3, 3)
+        test_row, test_col = self.ms.take_first_step(row, col, paths, turn)
+        self.assertEqual((correct_row, correct_col), (test_row, test_col))
+
+        filename = "test_mazes/test_maze_017.txt"
+        maze = self.ms.get_maze(filename, return_maze=True)
+        paths = self.ms.get_paths(maze, row, col)
+        turn = 'right'
+        # should step east
+        correct_row, correct_col = (2, 4)
+        test_row, test_col = self.ms.take_first_step(row, col, paths, turn)
+        self.assertEqual((correct_row, correct_col), (test_row, test_col))
+        turn = 'left'
+        # should step west
+        correct_row, correct_col = (2, 2)
+        test_row, test_col = self.ms.take_first_step(row, col, paths, turn)
+        self.assertEqual((correct_row, correct_col), (test_row, test_col))
+        
+        filename = "test_mazes/test_maze_018.txt"
+        maze = self.ms.get_maze(filename, return_maze=True)
+        paths = self.ms.get_paths(maze, row, col)
+        turn = 'right'
+        # should step west
+        correct_row, correct_col = (2, 2)
+        test_row, test_col = self.ms.take_first_step(row, col, paths, turn)
+        self.assertEqual((correct_row, correct_col), (test_row, test_col))
+
+        filename = "test_mazes/test_maze_018.txt"
+        maze = self.ms.get_maze(filename, return_maze=True)
+        paths = self.ms.get_paths(maze, row, col)
+        turn = 'right'
+        # should step west
+        correct_row, correct_col = (2, 2)
+        test_row, test_col = self.ms.take_first_step(row, col, paths, turn)
+        self.assertEqual((correct_row, correct_col), (test_row, test_col))
+
+        filename = "test_mazes/test_maze_019.txt"
+        maze = self.ms.get_maze(filename, return_maze=True)
+        paths = self.ms.get_paths(maze, row, col)
+        turn = 'left'
+        # should step east
+        correct_row, correct_col = (2, 4)
+        test_row, test_col = self.ms.take_first_step(row, col, paths, turn)
+        self.assertEqual((correct_row, correct_col), (test_row, test_col))
+
+        filename = "test_mazes/test_maze_020.txt"
+        maze = self.ms.get_maze(filename, return_maze=True)
+        paths = self.ms.get_paths(maze, row, col)
+        turn = 'left'
+        # should step north
+        correct_row, correct_col = (1, 3)
+        test_row, test_col = self.ms.take_first_step(row, col, paths, turn)
+        self.assertEqual((correct_row, correct_col), (test_row, test_col))
+        
+    def test_take_step(self):
+        """Correctly takes a step in the maze."""
+
+        row, col = (2, 3)
+        filename = "test_mazes/test_maze_021.txt"
+        maze = self.ms.get_maze(filename, return_maze=True)
+        paths = self.ms.get_paths(maze, row, col)
+
+        # coming from the north
+        prev_row, prev_col = (1, 3)
+        turn = 'right'
+        # should step west
+        correct = (2, 2, 2, 3) # new_row, new_col, new_prev_row, new_prev_col
+        test = self.ms.take_step(row, col, prev_row, prev_col, paths, turn)
+        self.assertEqual(correct, test)
+        turn = 'left'
+        # should step east  
+        correct = (2, 4, 2, 3) # new_row, new_col, new_prev_row, new_prev_col
+        test = self.ms.take_step(row, col, prev_row, prev_col, paths, turn)
+        self.assertEqual(correct, test)
+       
+        # coming from the south
+        prev_row, prev_col = (3, 3)
+        turn = 'right'
+        # should step east
+        correct = (2, 4, 2, 3) # new_row, new_col, new_prev_row, new_prev_col
+        test = self.ms.take_step(row, col, prev_row, prev_col, paths, turn)
+        self.assertEqual(correct, test)
+        turn = 'left'
+        # should step west  
+        correct = (2, 2, 2, 3) # new_row, new_col, new_prev_row, new_prev_col
+        test = self.ms.take_step(row, col, prev_row, prev_col, paths, turn)
+        self.assertEqual(correct, test)
+
+        # coming from the east
+        prev_row, prev_col = (2, 4)
+        turn = 'right'
+        # should step north
+        correct = (1, 3, 2, 3) # new_row, new_col, new_prev_row, new_prev_col
+        test = self.ms.take_step(row, col, prev_row, prev_col, paths, turn)
+        self.assertEqual(correct, test)
+        turn = 'left'
+        # should step south  
+        correct = (3, 3, 2, 3) # new_row, new_col, new_prev_row, new_prev_col
+        test = self.ms.take_step(row, col, prev_row, prev_col, paths, turn)
+        self.assertEqual(correct, test)
+
+        # coming from the west
+        prev_row, prev_col = (2, 2)
+        turn = 'right'
+        # should step south
+        correct = (3, 3, 2, 3) # new_row, new_col, new_prev_row, new_prev_col
+        test = self.ms.take_step(row, col, prev_row, prev_col, paths, turn)
+        self.assertEqual(correct, test)
+        turn = 'left'
+        # should step north  
+        correct = (1, 3, 2, 3) # new_row, new_col, new_prev_row, new_prev_col
+        test = self.ms.take_step(row, col, prev_row, prev_col, paths, turn)
+        self.assertEqual(correct, test)
 
 if __name__ == '__main__':
     unittest.main()
