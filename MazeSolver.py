@@ -252,16 +252,12 @@ class MazeSolver:
             if (row != 0) and (maze[row-1][col] != self.wall):
                 path_north = True
         except IndexError:
-            # trying to ferret out an IndexError I occasionally get here;
-            # have not figured it out
-            print(f'IndexError: {row}, {col}')
+            pass
         try:
             if (col != 0) and (maze[row][col-1] != self.wall):
                 path_west = True
         except IndexError:
-            # trying to ferret out an IndexError I occasionally get here;
-            # have not figured it out
-            print(f'IndexError: {row}, {col}')
+            pass
 
         return path_north, path_south, path_east, path_west
 
@@ -582,6 +578,7 @@ class MazeSolver:
         seen_S = False
         seen_D = False 
         while True:
+            self.steps[-1][1][-1][1].append((row, col))
             if turn == 'random':
                 this_turn = random.choice(['right', 'left'])
             else:
@@ -668,8 +665,8 @@ class MazeSolver:
         """
 
         blazed_trail = self.original_maze[:]
-        for row in range(1, len(blazed_trail)-1):
-            for col in range(1, len(blazed_trail[row])-1):
+        for row in range(0, len(blazed_trail)):
+            for col in range(0, len(blazed_trail[row])):
                 if solution[row][col] == self.path:
                     blazed_trail = self.insert_char(blazed_trail,
                                                     row, col, self.blaze)
@@ -679,27 +676,56 @@ class MazeSolver:
         """Solve the maze n times, and return the shortest solution.
         
         Keyword Args:
-            n:          number of times to solve the maze
+            n:  number of times to solve the maze
 
         Returns:
             The shortest path from start to finish marked onto the original
             maze.
         """
+        
+        self.steps = []
+
+        ######################################################################
+        # self.steps has the following structure:
+        #
+        # [ [ solution index, [ foray index, [ (row, col), ...]]]]
+        #
+        # Each solution contains multiple forays into the maze to break the
+        # loops. Each foray starts over from S. Each step in a foray is a
+        # (row, col) tuple.
+        ######################################################################
+
+        self.breaks = []
+
+        ######################################################################
+        # self.breaks has the following structure:
+        #
+        # [ [ solution index, [ broken loop, broken loop, ...]]]
+        #
+        # There is a broken maze for each foray.
+        ######################################################################
 
         self.solutions = []
         self.solution_lengths = []
         for i in range(n):
+            self.steps.append([i, []]) # i is the solution index
+            self.breaks.append([i, []]) 
             working_maze = self.original_maze[:] # refresh working maze 
             working_maze = self.fill_in_dead_ends(working_maze)
+            self.breaks[-1][1].append(working_maze)
             # walk the maze turning randomly at branches until there are no more
             # loops
             num_branches = self.num_branches(working_maze)
+            j = 0 # j is the foray index
             while num_branches > 0:
+                self.steps[-1][1].append([j, []])
                 broken_loop = self.break_loop(working_maze, turn='random')
                 if broken_loop:
                     working_maze = broken_loop[:]
                     working_maze = self.fill_in_dead_ends(working_maze)
                 num_branches = self.num_branches(working_maze)
+                self.breaks[-1][1].append(working_maze)
+                j += 1
             # filter out spurious solutions where S and/or D are completely walled
             # in (there is no path between S and D)
             if (not self.is_walled_in(working_maze, self.S_row, self.S_col) and
@@ -721,6 +747,32 @@ class MazeSolver:
         print('\n')
         return self.shortest_solution
 
+    def get_forays(self, n, return_forays=False, print_forays=True):
+        """For one solution, shows the steps that break the loops.
+        
+        Args:
+            n:      a solution index
 
+        Keyword Args:
+            return_forays:  boolean
+            print_forays:   boolean
 
+        Returns:
+            forays:     if return_forays == True 
+        
+        """
+
+        forays = []
+        for foray, maze in zip(self.steps[n][1], self.breaks[n][1]):
+            for row, col in foray[1]:
+                if maze[row][col] not in [self.start, self.dest]: 
+                    maze = self.insert_char(maze, row, col, self.blaze)
+            forays.append(maze)
+            if print_forays:
+                for row in maze:
+                    print(''.join(row), end='\n')
+
+        if return_forays:
+            return forays 
+        
 
