@@ -60,4 +60,12 @@ omitted).
 5. MazeSolver.solution_lengths:  A list of the lengths of all solutions
 found by the walker (excluding the spurious solutions).
 
+## Diagnostics
+
+There is a diagnostic method, get_forays(n, return_forays=False,
+print_forays=True), which, for a particular solution with index, n, prints or
+returns a list of all the forays into the maze that break the loops. n indexes
+all attempted solutions, even ones that fail (as indicated by \* in the progress
+indicator). Whereas the solutions and solution_lengths attributes contain only the
+successful attempts. Keep this in mind when you are choosing the index, n.
 
