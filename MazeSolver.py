@@ -552,7 +552,7 @@ class MazeSolver:
 
         return row, col, prev_row, prev_col
 
-    def break_loop(self, maze, max_steps=1000, turn='random'):
+    def break_loop(self, maze, turn='random'):
         """Find a loop in the maze, and break it by inserting a wall.
         
         The loop is recognized when the walker returns to a branch.
@@ -562,8 +562,6 @@ class MazeSolver:
             maze:        a list of strings
 
         Keyword Args:
-            max_steps:   maximum number of steps to take when looking
-                         for a loop
             turn:        determines whether the maze walker turns right,
                          left, or randomly at branches in the path
 
@@ -583,9 +581,7 @@ class MazeSolver:
         # infinite loops
         seen_S = False
         seen_D = False 
-        # count the number of steps taken while looking for a loop
-        num_steps = 0
-        while num_steps < max_steps:
+        while True:
             if turn == 'random':
                 this_turn = random.choice(['right', 'left'])
             else:
@@ -644,7 +640,7 @@ class MazeSolver:
             # Take a step #
             ###############
 
-            # if we are just starting out, there special rules for how to
+            # if we are just starting out, there are special rules for how to
             # take the first step
             if (prev_row, prev_col) == (None, None):
                 prev_row = row
@@ -659,12 +655,6 @@ class MazeSolver:
             path_north, path_south, path_east, path_west = self.get_paths(maze,
                                                            row, col)
             paths = [path_north, path_south, path_east, path_west]
-            # increment the step counter
-            num_steps += 1
-
-        # max_steps exceeded
-        print('ms', end=' ', flush=True)
-        return False
 
     def blaze_trail(self, solution):
         """Mark the solution on the original maze.
@@ -685,14 +675,11 @@ class MazeSolver:
                                                     row, col, self.blaze)
         return blazed_trail 
 
-    def solve_maze(self, n=50, max_steps=1000):
+    def solve_maze(self, n=50):
         """Solve the maze n times, and return the shortest solution.
         
         Keyword Args:
             n:          number of times to solve the maze
-            max_steps:  the maximum number of steps to take when looking for
-                        a loop (avoids infinite loops with no branches; may
-                        need to be increased for more complicated mazes)
 
         Returns:
             The shortest path from start to finish marked onto the original
@@ -708,8 +695,7 @@ class MazeSolver:
             # loops
             num_branches = self.num_branches(working_maze)
             while num_branches > 0:
-                broken_loop = self.break_loop(working_maze, max_steps=max_steps,
-                                              turn='random')
+                broken_loop = self.break_loop(working_maze, turn='random')
                 if broken_loop:
                     working_maze = broken_loop[:]
                     working_maze = self.fill_in_dead_ends(working_maze)

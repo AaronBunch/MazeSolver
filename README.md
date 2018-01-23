@@ -33,21 +33,17 @@ maze.verify_maze()
 maze.solve_maze()
 ```
 The maze file should be a text file with lines of equal length, and exactly one
-start and one destination character.  By default '0' -> wall, '1' -> path, 'S' ->
-start, and 'D' -> destination. These defaults can be changed with keyword
+start and one destination character.  By default '0' -> wall, '1' -> path, 'S'
+-> start, and 'D' -> destination. These defaults can be changed with keyword
 arguments when the MazeSolver object is instantiated. The maze should be
 completely bordered by wall. If a border wall is missing, one is silently added.
-See test mazes, 'test_maze_10\*.txt', in this repository. Maze templates of
-various sizes are provided.
+See test mazes, 'test_maze_10\*.txt', in this repository. Maze templates are
+provided.
 
 The solve_maze() method returns the original maze marked with the shortest path
 from start to finish. As a progress indicator, it prints to the screen the path
 length of each solution as it finds it, or an asterisk indicating a spurious
-solution (no path from start to destination). 'ms' means that the maximum number
-of steps was reached while looking for a loop. This typically indicates that the
-walker has been caught in an infinite loop (a looping path with no branches).
-But it may also mean that the maze is very complex, and max_steps should be
-increased.
+solution (no path from start to destination). 
 
 After solve_maze() is called, the MazeSolver object has the following attributes:
 

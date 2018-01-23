@@ -606,9 +606,6 @@ class MazeSolverTestCase(unittest.TestCase):
                         self.wall*7]
         self.assertEqual(correct_maze, test_maze)
 
-
-
-
 if __name__ == '__main__':
     unittest.main()
 
