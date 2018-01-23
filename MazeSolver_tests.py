@@ -539,6 +539,76 @@ class MazeSolverTestCase(unittest.TestCase):
         test = self.ms.take_step(row, col, prev_row, prev_col, paths, turn)
         self.assertEqual(correct, test)
 
+    def test_break_loop(self):
+        """Correctly inserts a wall to break a loop in the maze."""
+
+        filename = "test_mazes/test_maze_022.txt"
+        maze = self.ms.get_maze(filename, return_maze=True)
+        self.ms.verify_maze()
+        # turning right
+        test_maze = self.ms.break_loop(maze, turn='right')
+        correct_maze = [self.wall*7,
+                        self.wall + self.path*5 + self.wall,
+                        (self.wall + self.path + self.wall + self.dest +
+                        self.wall + self.path + self.wall),
+                        (self.wall + self.path + self.wall*3 + self.path +
+                        self.wall),
+                        (self.wall + self.path + self.wall + self.path*3 +
+                        self.wall),
+                        self.wall*3 + self.path + self.wall*3,
+                        self.wall*3 + self.start + self.wall*3,
+                        self.wall*7]
+        self.assertEqual(correct_maze, test_maze)
+        # turning left
+        maze = self.ms.get_maze(filename, return_maze=True)
+        self.ms.verify_maze()
+        test_maze = self.ms.break_loop(maze, turn='left')
+        correct_maze = [self.wall*7,
+                        self.wall + self.path*5 + self.wall,
+                        (self.wall + self.path + self.wall + self.dest +
+                        self.wall + self.path + self.wall),
+                        (self.wall + self.path + self.wall*3 + self.path +
+                        self.wall),
+                        (self.wall + self.path*3 + self.wall + self.path +
+                        self.wall),
+                        self.wall*3 + self.path + self.wall*3,
+                        self.wall*3 + self.start + self.wall*3,
+                        self.wall*7]
+        self.assertEqual(correct_maze, test_maze)
+
+        # testing seen_D (and partly seen_S)
+        filename = "test_mazes/test_maze_023.txt"
+        maze = self.ms.get_maze(filename, return_maze=True)
+        self.ms.verify_maze()
+        # turning right
+        test_maze = self.ms.break_loop(maze, turn='right')
+        correct_maze = [self.wall*7,
+                        self.wall*2 + self.path*4 + self.wall,
+                        (self.wall + self.dest + self.wall*3 + self.path +
+                        self.wall),
+                        (self.wall + self.path + self.wall*3 + self.path +
+                        self.wall),
+                        (self.wall + self.path*2 + self.start + self.path*2 +
+                        self.wall),
+                        self.wall*7]
+        self.assertEqual(correct_maze, test_maze)
+        # turning left
+        maze = self.ms.get_maze(filename, return_maze=True)
+        self.ms.verify_maze()
+        test_maze = self.ms.break_loop(maze, turn='left')
+        correct_maze = [self.wall*7,
+                        self.wall + self.path*5 + self.wall,
+                        (self.wall + self.dest + self.wall*3 + self.path +
+                        self.wall),
+                        self.wall*5 + self.path + self.wall,
+                        (self.wall + self.path*2 + self.start + self.path*2 +
+                        self.wall),
+                        self.wall*7]
+        self.assertEqual(correct_maze, test_maze)
+
+
+
+
 if __name__ == '__main__':
     unittest.main()
 

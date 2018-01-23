@@ -244,14 +244,24 @@ class MazeSolver:
 
         ######################################################################
         # We have to handle row[0] and col[0] differently, because row[-1] and
-        # col[-1] will not raise an IndexError (they will point to the end of
-        # the list).
+        # col[-1] will not raise an IndexError (they point to the end of the
+        # list)
         ######################################################################
 
-        if (row != 0) and (maze[row-1][col] != self.wall):
-            path_north = True
-        if (col != 0) and (maze[row][col-1] != self.wall):
-            path_west = True
+        try:
+            if (row != 0) and (maze[row-1][col] != self.wall):
+                path_north = True
+        except IndexError:
+            # trying to ferret out an IndexError I occasionally get here;
+            # have not figured it out
+            print(f'IndexError: {row}, {col}')
+        try:
+            if (col != 0) and (maze[row][col-1] != self.wall):
+                path_west = True
+        except IndexError:
+            # trying to ferret out an IndexError I occasionally get here;
+            # have not figured it out
+            print(f'IndexError: {row}, {col}')
 
         return path_north, path_south, path_east, path_west
 
@@ -596,7 +606,9 @@ class MazeSolver:
                         # if we are returning to S for the second time,
                         # start over
                         if seen_S is True: 
-                            return False
+                            maze = self.insert_char(maze, prev_row, prev_col,
+                                                    self.wall)
+                            return maze 
                         # if we are returning to S for the first time,
                         # keep going
                         else:
@@ -608,7 +620,9 @@ class MazeSolver:
                     return False
                 else:
                     if seen_D is True:
-                        return False
+                        maze = self.insert_char(maze, prev_row, prev_col,
+                                                self.wall)
+                        return maze 
                     else:
                         seen_D = True
 
