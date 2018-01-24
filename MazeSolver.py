@@ -10,9 +10,12 @@ class MazeSolver:
     """Find the shortest path through a maze.
 
     Public methods:
-        get_maze(filename): Loads a maze from filename and standardizes the
-                            source characters.
-        verify_maze():      Verifies that the maze is in the correct form.
+        get_maze(filename): Loads a maze from filename and converts the
+                            source characters to local characters.
+        verify_maze():      Verifies that the maze is in the correct form, and
+                            also sets the object attributes S_row, S_col, D_row,
+                            D_col. So it is necessary to call this method for
+                            every maze.
         solve_maze(n=50):   Solve the maze n times and return the shortest path 
                             marked on the original maze.
         get_forays(n):      For a given solution at index, n, prints the steps
@@ -28,6 +31,12 @@ class MazeSolver:
                             are omitted).
         shortest_solution:  The solution with the shortest path (failed
                             attempts are omitted).
+        steps:              A nested list containing every step taken to find
+                            solution. See solve_maze() for the structure.
+                            Includes the steps of failed attempts.
+        breaks:             A nested list of the broken loops for each
+                            solution. See solve_maze() for the structure.
+                            Includes the broken loops of failed attempts.
     """
 
     def __init__(self, source_wall='0', source_path='1',
@@ -54,12 +63,11 @@ class MazeSolver:
         """Load the maze and convert to internal wall and path characters.
         
         Args:
-            filename:   name of source file
+            filename (str): name of source file
         
         Returns:
-            maze:       a list of strings, source file characters converted
-                        to internal wall and path characters,
-                        if return_maze==True
+            maze (list):    source file characters converted to local
+                            characters
         """
         
         with open(filename) as f:
@@ -80,7 +88,8 @@ class MazeSolver:
         there is a problem.
 
         Returns:
-            maze:   if return_maze==True
+            maze (list):    with border walls added, if necessary
+            None:           if the maze is in the wrong form
         """
 
         # get start and destination positions
@@ -147,8 +156,8 @@ class MazeSolver:
             char:   the character to find
 
         Returns:
-            char_row:   list of row indices
-            char_col:   list of column indices
+            char_row (list):   row indices of the character
+            char_col (list):   column indices of the character
         """
 
         char_row = []
@@ -168,7 +177,7 @@ class MazeSolver:
             char:   the character to count
                 
         Returns:
-            the count of the character
+            count (int)
         """
 
         count = 0
@@ -181,14 +190,13 @@ class MazeSolver:
     def num_branches(self, maze):
         """Count the number of path branches in the maze.
 
-        Calls self.is_branch(). A branch is any path location with
-        open paths on at least three sides.
+        A branch is any path location with open paths on at least three sides.
 
         Args:
-            maze:   a list of strings
+            maze:           a list of strings
 
         Returns:
-            The number of branches in the maze.
+            count (int):    the number of branches in the maze
         """
 
         count = 0
@@ -202,13 +210,13 @@ class MazeSolver:
         """Insert a character into a maze at a specified row and column.
        
         Args:
-            maze:   a list of strings
-            row:    the row in which to insert the character (int)
-            col:    the column in which to insert the character (int)
-            char:   character to insert
+            maze:           a list of strings
+            row (int):      the row index
+            col (int):      the column index
+            char:           character to insert
 
         Returns:
-            The maze with the character inserted.
+            maze (list):    the maze with the character inserted
         """
 
         temp_list = list(maze[row])
@@ -225,13 +233,12 @@ class MazeSolver:
         right edge. But that still needs to be tested.)
 
         Args:
-            maze:   a list of strings
-            row:    the row number (int)
-            col:    the column number (int)
+            maze:           a list of strings
+            row (int):      the row index
+            col (int):      the column index
 
         Returns:
-            A tuple of booleans: path_north, path_south, path_east, path_west
-            True means the path is open; False means no path in that direction.
+            path_north, path_south, path_east, path_west (boolean)
         """
 
         path_north = False
@@ -276,9 +283,9 @@ class MazeSolver:
         direction.
 
         Args:
-            maze:   a list of strings
-            row:    the row number (int)
-            col:    the column number (int)
+            maze:           a list of strings
+            row (int):      the row index
+            col (int):      the column index
         
         Returns:
             Boolean
@@ -295,13 +302,13 @@ class MazeSolver:
     def is_walled_in(self, maze, row, col):
         """Determine if a maze location is surrounded entirely by walls.
         
-        This is used to filter out spurious solutions, in which the
-        start and destination are completely walled in.
+        This is used to filter out failed attempts, in which there is no path
+        from start to destination (both are 'walled in').
 
         Args:
-            maze:   a list of strings
-            row:    the row number (int)
-            col:    the column number (int)
+            maze:           a list of strings
+            row (int):      the row index
+            col (int):      the column index
 
         Returns:
             Boolean
@@ -320,9 +327,9 @@ class MazeSolver:
         three sides.
 
         Args:
-            maze:   a list of strings
-            row:    the row number (int)
-            col:    the column number (int)
+            maze:           a list of strings
+            row (int):      the row index
+            col (int):      the column index
 
         Returns:
             Boolean
@@ -346,7 +353,7 @@ class MazeSolver:
             maze:   a list of strings 
 
         Returns:
-            The maze with no dead-ends.
+            maze:   the maze with no dead-ends
         """
 
         dead_ends = True
@@ -364,10 +371,10 @@ class MazeSolver:
         """Counts the number of dead-ends in the maze. 
 
         Args:
-            maze:   a list of strings
+            maze: a list of strings
 
         Returns:
-            count:  the number of dead-ends in the maze
+            count (int)   
         """
 
         count = 0
@@ -410,14 +417,14 @@ class MazeSolver:
            open path clockwise from south.
 
         Args:
-            row:        current row (int)
-            col:        current col (int)
-            paths:      [path_north, path_south, path_east, past_west]
-            turn:       the direction to turn at branches
+            row (int):      row index of the current position
+            col (int):      column index of the current position
+            paths (list):   [path_north, path_south, path_east, past_west]
+            turn (str):     the direction to turn at branches
 
         Returns:
-            row:        the new row
-            col:        the new column
+            row (int):      row index of the new position
+            col (int):      column index of the new position
         """
 
         path_north, path_south, path_east, path_west = paths
@@ -465,18 +472,18 @@ class MazeSolver:
         """Takes a step in the maze.
 
         Args:
-            row:        current row (int)
-            col:        current col (int)
-            prev_row:   the previous row (int)
-            prev_col:   the previous column (int)
-            paths:      [path_north, path_south, path_east, past_west]
-            turn:       the direction to turn at branches
+            row (int):          row index of the current position
+            col (int):          column index of the current position
+            prev_row (int):     row index of the previous position
+            prev_col (int):     column index of the previous position
+            paths (list):       [path_north, path_south, path_east, past_west]
+            turn (str):         the direction to turn at branches
 
         Returns:
-            row:        the new row (int)
-            col:        the new column (int)
-            prev_row:   the new previous row
-            prev_col:   the new previous column
+            row (int):        row index of the new position
+            col (int):        column index of the new position
+            prev_row (int):   the new previous row index
+            prev_col (int):   the new previous column index
         """
         
         path_north, path_south, path_east, path_west = paths
@@ -563,11 +570,11 @@ class MazeSolver:
         The loop is broken by walling off the branch behind the walker.
           
         Args:
-            maze:        a list of strings
+            maze:           a list of strings
 
         Keyword Args:
-            turn:        determines whether the maze walker turns right,
-                         left, or randomly at branches in the path
+            turn (str):     determines whether the maze walker turns right,
+                            left, or randomly at branches in the path
 
         Returns:
             False, if no loop is found.
@@ -667,11 +674,12 @@ class MazeSolver:
         """Mark the solution on the original maze.
         
         Args:
-            solution:   a maze completely filled in except for a single path
-                        from start to finish
+            solution (list):        a maze completely filled in except for a
+                                    single path from start to finish
        
         Returns:
-            The original maze with the solution marked on it.
+            blazed_trail (list):    The original maze with the solution marked
+                                    on it.
         """
 
         blazed_trail = self.original_maze[:]
@@ -686,11 +694,11 @@ class MazeSolver:
         """Solve the maze n times, and return the shortest solution.
         
         Keyword Args:
-            n:  number of times to solve the maze
+            n (int):    number of times to solve the maze
 
         Returns:
-            The shortest path from start to finish marked onto the original
-            maze.
+            shortest_solution (list):   The shortest path from start to finish
+                                        marked onto the original maze.
         """
         
         self.steps = []
@@ -761,14 +769,14 @@ class MazeSolver:
         """For one solution, shows the steps that break the loops.
         
         Args:
-            n:      a solution index
+            n (int):        a solution index
 
         Keyword Args:
-            return_forays:  boolean
-            print_forays:   boolean
+            return_forays (bool)
+            print_forays (bool)
 
         Returns:
-            forays:     if return_forays == True 
+            forays
         
         """
 
