@@ -60,10 +60,10 @@ After solve_maze() is called, the MazeSolver object has the following attributes
 4. solution_lengths:  A list of the lengths of all solutions found by the walker
    (excluding failed attempts).
 
-5. steps:  A nested list of every step taken in the maze for each solution
+5. steps:  Nested lists of every step taken in the maze for each solution
    (including failed attempts).
 
-6. breaks:  A nested list of every broken loop with new dead-ends filled in for
+6. breaks:  Nested lists of every broken loop with new dead-ends filled in for
    each solution (including failed attempts).
 
 ## Diagnostics
