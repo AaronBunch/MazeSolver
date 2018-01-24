@@ -769,7 +769,7 @@ class MazeSolver:
         """For one solution, shows the steps that break the loops.
         
         Args:
-            n (int):        a solution index
+            n (int): a solution index
 
         Keyword Args:
             return_forays (bool)
