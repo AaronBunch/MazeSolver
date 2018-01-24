@@ -9,17 +9,25 @@ __date__ = "Jan 9, 2018"
 class MazeSolver:
     """Find the shortest path through a maze.
 
-    Public method:
+    Public methods:
+        get_maze(filename): Loads a maze from filename and standardizes the
+                            source characters.
+        verify_maze():      Verifies that the maze is in the correct form.
         solve_maze(n=50):   Solve the maze n times and return the shortest path 
                             marked on the original maze.
+        get_forays(n):      For a given solution at index, n, prints the steps
+                            of each foray into the maze to break the loops.
+                            Includes the forays of failed solution attempts.
+
     Instance variables:
         original_maze:      The maze as it was loaded from its source file
                             (a list of strings).
-        solution_lengths:   A list of the path-lengths of the real solutions
-                            (spurious solutions omitted).
-        solutions:          A list of solutions to the maze (spurious solutions
-                            omitted).
-        shortest_solution:  The solution with the shortest path.
+        solution_lengths:   A list of the path-lengths of the solutions
+                            (failed attempts are omitted).
+        solutions:          A list of solutions to the maze (failed attempts
+                            are omitted).
+        shortest_solution:  The solution with the shortest path (failed
+                            attempts are omitted).
     """
 
     def __init__(self, source_wall='0', source_path='1',
@@ -51,7 +59,7 @@ class MazeSolver:
         Returns:
             maze:       a list of strings, source file characters converted
                         to internal wall and path characters,
-                        if return_maze=True
+                        if return_maze==True
         """
         
         with open(filename) as f:
@@ -139,8 +147,8 @@ class MazeSolver:
             char:   the character to find
 
         Returns:
-            char_row:   list of rows
-            char_col:   list of columns
+            char_row:   list of row indices
+            char_col:   list of column indices
         """
 
         char_row = []
@@ -578,6 +586,8 @@ class MazeSolver:
         seen_S = False
         seen_D = False 
         while True:
+            # see self.solve_maze() for the structure of self.steps
+            # we are storing every step in nested lists
             self.steps[-1][1][-1][1].append((row, col))
             if turn == 'random':
                 this_turn = random.choice(['right', 'left'])
@@ -589,8 +599,8 @@ class MazeSolver:
             # the base of a loop, or a branch not seen before.             #
             ################################################################
 
-            # check if we are returning to the start
-            if prev_row is not None: # do not check when first starting out
+            # check if we are returning to the start;
+            if prev_row is not None:
                 if (row, col) == (self.S_row, self.S_col):
                     # if we have returned to S in a dead-end, return
                     if self.is_dead_end(maze, row, col):
@@ -702,7 +712,7 @@ class MazeSolver:
         #
         # [ [ solution index, [ broken loop, broken loop, ...]]]
         #
-        # There is a broken maze for each foray.
+        # There is a maze with a broken loop for each foray.
         ######################################################################
 
         self.solutions = []
