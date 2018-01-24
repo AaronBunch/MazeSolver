@@ -75,3 +75,10 @@ all attempted solutions, even ones that fail (as indicated by \* in the progress
 indicator). Whereas the solutions and solution_lengths attributes contain only the
 successful attempts. So use the progress indicator to choose n for get_forays().
 
+## Known Issues
+
+1. Bafflingly, every so often, after successfully solving the maze many times,
+   the maze walker takes off seemingly at random, walks through walls, across
+   paths, until it runs off the edge of the maze and raises an IndexError. I
+   have not figured out what causes this behavior. Re-running the solver
+   navigates the maze without incident.
