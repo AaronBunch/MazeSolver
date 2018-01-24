@@ -37,13 +37,12 @@ start and one destination character.  By default '0' -> wall, '1' -> path, 'S'
 -> start, and 'D' -> destination. These defaults can be changed with keyword
 arguments when the MazeSolver object is instantiated. The maze should be
 completely bordered by wall. If a border wall is missing, one is silently added.
-See test mazes, 'test_maze_10\*.txt', in this repository. Maze templates are
-provided.
+See test mazes, 'test_maze_10\*.txt', in this repository. 
 
 The solve_maze() method returns the original maze marked with the shortest path
 from start to finish. As a progress indicator, it prints to the screen the path
-length of each solution as it finds it, or an asterisk indicating a spurious
-solution (no path from start to destination). 
+length of each solution as it finds it, or an asterisk indicating a failed
+attempt (the maze walker has cut off all paths from start to destination). 
 
 After solve_maze() is called, the MazeSolver object has the following attributes:
 
