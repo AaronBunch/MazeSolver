@@ -47,18 +47,22 @@ solution (no path from start to destination).
 
 After solve_maze() is called, the MazeSolver object has the following attributes:
 
-1. MazeSolver.original_maze:  This is available as soon as the object
-is initialized.
+1. original_maze:  This is available as soon as the object is initialized.
 
-2. MazeSolver.shortest_solution:  The shortest path from start to
-finish marked on the original maze.
+2. shortest_solution:  The shortest path from start to finish marked on the
+   original maze. 
 
-3. MazeSolver.solutions:  A list of all solutions found by the
-walker (there may be fewer than n, because spurious solutions are
-omitted).
+3. solutions:  A list of all solutions found by the walker (there may be fewer
+   than n, because failed attempts are omitted).
                       
-5. MazeSolver.solution_lengths:  A list of the lengths of all solutions
-found by the walker (excluding the spurious solutions).
+4. solution_lengths:  A list of the lengths of all solutions found by the walker
+   (excluding failed attempts).
+
+5. steps:  A nested list of every step taken in the maze for each solution
+   (failed attempts are included).
+
+6. breaks:  A nested list of every broken loop with new dead-ends filled in for
+   each solution (failed attempts are included).
 
 ## Diagnostics
 
@@ -67,5 +71,5 @@ print_forays=True), which, for a particular solution with index, n, prints or
 returns a list of all the forays into the maze that break the loops. n indexes
 all attempted solutions, even ones that fail (as indicated by \* in the progress
 indicator). Whereas the solutions and solution_lengths attributes contain only the
-successful attempts. Keep this in mind when you are choosing the index, n.
+successful attempts. So use the progress indicator to choose n for get_forays().
 
