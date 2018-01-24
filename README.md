@@ -32,12 +32,14 @@ maze.get_maze(filename)
 maze.verify_maze()
 maze.solve_maze()
 ```
-The maze file should be a text file with lines of equal length, and exactly one
-start and one destination character.  By default '0' -> wall, '1' -> path, 'S'
--> start, and 'D' -> destination. These defaults can be changed with keyword
-arguments when the MazeSolver object is instantiated. The maze should be
-completely bordered by wall. If a border wall is missing, one is silently added.
-See test mazes, 'test_maze_10\*.txt', in this repository. 
+As of now, it is necessary to call the verify_maze() method, which verifies that
+the maze is in the proper form, but also performs some other necessary
+house-keeping. The maze file should be a text file with lines of equal length,
+and exactly one start and one destination character.  By default '0' -> wall,
+'1' -> path, 'S' -> start, and 'D' -> destination. These defaults can be changed
+with keyword arguments when the MazeSolver object is instantiated. The maze
+should be completely bordered by wall. If a border wall is missing, one is
+silently added.  See test mazes, 'test_maze_10\*.txt', in this repository. 
 
 The solve_maze() method returns the original maze marked with the shortest path
 from start to finish. As a progress indicator, it prints to the screen the path
@@ -46,7 +48,8 @@ attempt (the maze walker has cut off all paths from start to destination).
 
 After solve_maze() is called, the MazeSolver object has the following attributes:
 
-1. original_maze:  This is available as soon as the object is initialized.
+1. original_maze:  This is available as soon as a maze is loaded with
+   get_maze(filename).
 
 2. shortest_solution:  The shortest path from start to finish marked on the
    original maze. 
