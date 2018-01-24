@@ -61,10 +61,10 @@ After solve_maze() is called, the MazeSolver object has the following attributes
    (excluding failed attempts).
 
 5. steps:  A nested list of every step taken in the maze for each solution
-   (failed attempts are included).
+   (including failed attempts).
 
 6. breaks:  A nested list of every broken loop with new dead-ends filled in for
-   each solution (failed attempts are included).
+   each solution (including failed attempts).
 
 ## Diagnostics
 
