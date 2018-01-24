@@ -545,6 +545,8 @@ class MazeSolverTestCase(unittest.TestCase):
         filename = "test_mazes/test_maze_022.txt"
         maze = self.ms.get_maze(filename, return_maze=True)
         self.ms.verify_maze()
+        # we need to put in steps by hand for this test
+        self.ms.steps = [[0, [[0, []]]]]
         # turning right
         test_maze = self.ms.break_loop(maze, turn='right')
         correct_maze = [self.wall*7,
@@ -562,6 +564,8 @@ class MazeSolverTestCase(unittest.TestCase):
         # turning left
         maze = self.ms.get_maze(filename, return_maze=True)
         self.ms.verify_maze()
+        # we need to put in steps by hand for this test
+        self.ms.steps = [[0, [[0, []]]]]
         test_maze = self.ms.break_loop(maze, turn='left')
         correct_maze = [self.wall*7,
                         self.wall + self.path*5 + self.wall,
@@ -580,6 +584,8 @@ class MazeSolverTestCase(unittest.TestCase):
         filename = "test_mazes/test_maze_023.txt"
         maze = self.ms.get_maze(filename, return_maze=True)
         self.ms.verify_maze()
+        # we need to put in steps by hand for this test
+        self.ms.steps = [[0, [[0, []]]]]
         # turning right
         test_maze = self.ms.break_loop(maze, turn='right')
         correct_maze = [self.wall*7,
@@ -595,6 +601,8 @@ class MazeSolverTestCase(unittest.TestCase):
         # turning left
         maze = self.ms.get_maze(filename, return_maze=True)
         self.ms.verify_maze()
+        # we need to put in steps by hand for this test
+        self.ms.steps = [[0, [[0, []]]]]
         test_maze = self.ms.break_loop(maze, turn='left')
         correct_maze = [self.wall*7,
                         self.wall + self.path*5 + self.wall,
