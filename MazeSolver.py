@@ -12,10 +12,7 @@ class MazeSolver:
     Public methods:
         get_maze(filename): Loads a maze from filename and converts the
                             source characters to local characters.
-        verify_maze():      Verifies that the maze is in the correct form, and
-                            also sets the object attributes S_row, S_col, D_row,
-                            D_col. So it is necessary to call this method for
-                            every maze.
+        verify_maze():      Verifies that the maze is in the correct form.
         solve_maze(n=50):   Solve the maze n times and return the shortest path 
                             marked on the original maze.
         get_forays(n):      For a given solution at index, n, prints the steps
@@ -76,6 +73,22 @@ class MazeSolver:
         maze = [row.replace(self.source_wall, self.wall) for row in maze]
         maze = [row.replace(self.source_path, self.path) for row in maze]
         self.original_maze = maze
+
+        #######################################################################
+        # Provisionally get the unverified start and destination positions so
+        # we do not have to run verify_maze() every time, if we don't want to.
+        # Verify_maze() will over-write these positions, if the maze passes
+        # verification.
+        #######################################################################
+
+        self.S_row, self.S_col = self.find_char(self.original_maze, 'S')
+        self.D_row, self.D_col = self.find_char(self.original_maze, 'D')
+        # find_char() returns a list; we want only the first element for S and D
+        if self.S_row and self.D_row:
+            self.S_row = self.S_row[0]
+            self.S_col = self.S_col[0]
+            self.D_row = self.D_row[0]
+            self.D_col = self.D_col[0]
         if return_maze == True:
             return maze
 
@@ -104,7 +117,7 @@ class MazeSolver:
                       """)
             return
         # check for no start or no destination
-        if (len(self.S_row) == 0) or (len(self.D_row) == 0):
+        if not self.S_row or not self.D_row:
             if not return_maze:
                 print("""
                         Both a start and a destination
@@ -776,7 +789,9 @@ class MazeSolver:
             print_forays (bool)
 
         Returns:
-            forays
+            forays (list):  The steps that break each loop marked on each
+                            filled-in maze, so you can follow the progress
+                            of the loop-breaking.
         
         """
 
