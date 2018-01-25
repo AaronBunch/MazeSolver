@@ -34,7 +34,7 @@ maze.solve_maze()
 ```
 
 ## Methods
-1. __init__(source_wall='0', source_path='1',
+1. \_\_init\_\_(source_wall='0', source_path='1',
             source_start='S', source_dest='D'):
     Creates a MazeSolver object. Sets the local and source file maze
     characters. Source file characteres can be set with keyword
