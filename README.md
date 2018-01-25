@@ -44,11 +44,11 @@ maze.solve_maze()
    characters to local characters. The source file should be a text file with
    lines of equal length.
 
-3. verify_maze(): Verifies that the loaded maze has the correct form. The maze
-   should have rows of equal length, have exactly one start and one destination
-   character, and be completely bordered by wall characters. If a border wall is
-   missing, one is silently added. See test mazes, 'test_maze_10\*.txt', in this
-   repository.
+3. verify_maze(): Optional. Verifies that the loaded maze has the correct form.
+   The maze should have rows of equal length, have exactly one start and one
+   destination character, and be completely bordered by wall characters. If a
+   border wall is missing, one is silently added. See test mazes,
+   'test_maze_10\*.txt', in this repository.
 
 4. solve_maze(n=50): Solves the maze n times and returns the shortest solution
    marked on the original maze. As a progress indicator, it prints to the screen
@@ -85,7 +85,6 @@ maze.solve_maze()
    [ [ solution index, [ broken loop, broken loop, ...]]]
 
 ## Known Issues
-
 1. Bafflingly, every so often, after successfully solving the maze many times,
    the maze walker takes off seemingly at random, walks through walls, across
    paths, until it runs off the edge of the maze and raises an IndexError. I
