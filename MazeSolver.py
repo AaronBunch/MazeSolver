@@ -93,7 +93,7 @@ class MazeSolver:
             return maze
 
     def verify_maze(self, return_maze=False):
-        """Verify that the loaded maze is in the correct format.
+        """Verify that the loaded maze has the correct form.
         
         The maze must have exactly one start and one destination character; it
         must be rectangular (all rows of equal length); and if a border wall is
