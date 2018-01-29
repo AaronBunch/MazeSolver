@@ -2,6 +2,7 @@
 
 import sys
 import random
+import networkx as nx
 
 __author__ = "Aaron Bunch"
 __date__ = "Jan 9, 2018"
@@ -91,6 +92,39 @@ class MazeSolver:
             self.D_col = self.D_col[0]
         if return_maze == True:
             return maze
+
+    def to_graph(self, return_graph=False):
+        """Converts the maze to a networkx graph.
+
+        Args:
+            maze:   a list of strings
+
+        Returns:
+            G:      the maze represented as a networkx graph
+        """
+
+        maze = self.original_maze[:]
+        self.G = nx.Graph()
+        for row in range(len(maze)):
+            for col in range(len(maze[row])):
+                if maze[row][col] in [self.path, self.start, self.dest]:
+                    self.G.add_node((row, col))
+                    paths = self.get_paths(maze, row, col)
+                    if paths[0]:
+                        # path north
+                        self.G.add_edge((row, col), (row-1, col))
+                    if paths[1]:
+                        # path south
+                        self.G.add_edge((row, col), (row+1, col))
+                    if paths[2]:
+                        # path east
+                        self.G.add_edge((row, col), (row, col+1))
+                    if paths[3]:
+                        # path west
+                        self.G.add_edge((row, col), (row, col-1))
+        
+        if return_graph:
+            return self.G
 
     def verify_maze(self, return_maze=False):
         """Verify that the loaded maze has the correct form.
@@ -808,4 +842,21 @@ class MazeSolver:
         if return_forays:
             return forays 
         
+    def solve_graph(self, print_solution=True, return_solution=False):
+        """Returns the shortest path from start to destination marked on the
+        original maze."""
+
+        shortest_path = nx.shortest_path(self.G, (self.S_row, self.S_col),
+                                                 (self.D_row, self.D_col))[1:-1]
+
+        solution = self.original_maze[:]
+        for (row, col) in shortest_path:
+            solution = self.insert_char(solution, row, col, self.blaze)
+
+        if print_solution:
+            for row in solution:
+                print(''.join(row), end='\n')
+
+        if return_solution:
+            return solution
 
