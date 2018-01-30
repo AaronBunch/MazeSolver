@@ -27,8 +27,7 @@ trouble with big open spaces and double- or triple width paths.
 ### Then I Discovered Network Analysis
 If you convert the maze to a networkx graph, finding the shortest path between
 any two points in the graph is trivial. It takes very little code, and it solves
-every kind of maze you can imagine. This network maze solver is also in the
-class.
+every kind of maze you can imagine. 
 
 ## Use
 
@@ -81,8 +80,7 @@ ms.solve_graph()
    the solutions and solution_lengths attributes contain only the successful
    attempts. So use the progress indicator to choose n for this method.
 
-6. to_graph(return_graph=False): Converts the maze to a networkx graph, and 
-   stores this as the attribute, G.
+6. to_graph(return_graph=False): Converts the maze to a networkx graph.
 
 7. solve_graph(print_solution=True, return_solution=False): Use with
    to_graph(). Returns the shortest path from start to destination marked on
