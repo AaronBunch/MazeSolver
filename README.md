@@ -54,7 +54,7 @@ ms.solve_graph()
 1. \_\_init\_\_(source_wall='0', source_path='1',
             source_start='S', source_dest='D'):
     Creates a MazeSolver object. Sets the local and source file maze
-    characters. Source file characteres can be set with keyword
+    characters. Source file characters can be set with keyword
     arguments.
 
 2. get_maze(filename): Loads the maze from filename and converts the source file
