@@ -11,30 +11,35 @@ class MazeSolver:
     """Find the shortest path through a maze.
 
     Public methods:
-        get_maze(filename): Loads a maze from filename and converts the
-                            source characters to local characters.
-        verify_maze():      Verifies that the maze is in the correct form.
-        solve_maze(n=50):   Solve the maze n times and return the shortest path 
-                            marked on the original maze.
         get_forays(n):      For a given solution at index, n, prints the steps
                             of each foray into the maze to break the loops.
                             Includes the forays of failed solution attempts.
+        get_maze(filename): Loads a maze from filename and converts the
+                            source characters to local characters.
+        solve_graph():      Use with to_graph(). Uses networkx to return the
+                            shortest path from start to destination marked on
+                            the original maze. 
+        solve_maze(n=50):   Solve the maze n times and return the shortest path 
+                            marked on the original maze.
+        to_graph():         Converts the loaded maze to a networkx graph.
+        verify_maze():      Verifies that the maze is in the correct form.
 
     Instance variables:
-        original_maze:      The maze as it was loaded from its source file
-                            (a list of strings).
-        solution_lengths:   A list of the path-lengths of the solutions
-                            (failed attempts are omitted).
-        solutions:          A list of solutions to the maze (failed attempts
-                            are omitted).
-        shortest_solution:  The solution with the shortest path (failed
-                            attempts are omitted).
-        steps:              A nested list containing every step taken to find
-                            solution. See solve_maze() for the structure.
-                            Includes the steps of failed attempts.
         breaks:             A nested list of the broken loops for each
                             solution. See solve_maze() for the structure.
                             Includes the broken loops of failed attempts.
+        G:                  The original maze represented as a networkx graph.
+        original_maze:      The maze as it was loaded from its source file
+                            (a list of strings).
+        shortest_solution:  The solution with the shortest path (failed
+                            attempts are omitted).
+        solutions:          A list of solutions to the maze (failed attempts
+                            are omitted).
+        solution_lengths:   A list of the path-lengths of the solutions
+                            (failed attempts are omitted).
+        steps:              A nested list containing every step taken to find
+                            solution. See solve_maze() for the structure.
+                            Includes the steps of failed attempts.
     """
 
     def __init__(self, source_wall='0', source_path='1',
@@ -96,8 +101,8 @@ class MazeSolver:
     def to_graph(self, return_graph=False):
         """Converts the maze to a networkx graph.
 
-        Args:
-            maze:   a list of strings
+        Keyword Args:
+            return_graph (bool):    returns a networkx graph
 
         Returns:
             G:      the maze represented as a networkx graph
