@@ -1,36 +1,54 @@
 # MazeSolver
 A python maze solver class
 
-## The Idea
-This maze solver started with the idea that it would be
-easier to find the dead-ends in a maze than the path through
-it. So the solver scans through the maze, filling in all
-the dead-ends, and what is left is the path from start to
-finish.
+## Really Two Maze Solvers
 
-Almost. If there are loops in the maze, those loops will be
-left over when all the dead-ends have been filled in. So, a
-walker, turning randomly at branches, discovers and 'breaks'
-all the loops by inserting a wall at the branch where the
-loop comes together. Loops can be broken in this way without
-losing access to any part of the loop. After breaking a
-loop, new dead-ends are created that can be filled in. After
-all of the loops are broken, and the new dead-ends filled in,
-there is a single path from start to finish.
+### My First Idea
+My first idea was that it would be easier to find the dead-ends in a maze than
+the path through it. So the first solver scans through the maze, filling in all
+the dead-ends, and what is left is the path from start to finish.
 
-Almost. The randomly turning walker does not always find the
-shortest path through the loops. And sometimes the walker
-breaks the loops in such a way that there is no path from
-start to finish. So, we solve the maze fifty times (by
-default) and pick the shortest real solution.
+This first solver became a little more complicated, because if there are loops
+in the maze, those loops will be left over when all the dead-ends are filled in.
+So a walker, turning randomly at branches, discovers and 'breaks' all the loops
+by inserting a wall at the branch where the loop comes together. After breaking
+a loop, new dead-ends are created that can be filled in. After all of the loops
+are broken, and the new dead-ends filled in, there is a single path from start
+to finish.
+
+As you can imagine, the randomly turning walker does not always find the
+shortest path through the loops. And sometimes the walker breaks the loops in
+such a way that there is no path from start to finish. So, we solve the maze
+fifty times (by default) and pick the shortest solution.
+
+This method works beautifully for all mazes with single-width paths. It has
+trouble with big open spaces and double- or triple width paths.
+
+### Then I Discovered Network Analysis
+If you convert the maze to a networkx graph, finding the shortest path between
+any two points in the graph is trivial. It takes very little code, and it solves
+every kind of maze you can imagine. This network maze solver is also in the
+class.
 
 ## Use
+
+### Maze Walker
 ```python
 from MazeSolver import MazeSolver
-maze = MazeSolver()
-maze.get_maze(filename)
-maze.verify_maze()
-maze.solve_maze()
+ms = MazeSolver()
+ms.get_maze(filename)
+ms.verify_maze()
+ms.solve_maze()
+```
+
+### Network Analysis
+```python
+from MazeSolver import MazeSolver
+ms = MazeSolver()
+ms.get_maze(filename)
+ms.verify_maze()
+ms.to_graph()
+ms.solve_graph()
 ```
 
 ## Methods
@@ -63,6 +81,13 @@ maze.solve_maze()
    the solutions and solution_lengths attributes contain only the successful
    attempts. So use the progress indicator to choose n for this method.
 
+6. to_graph(return_graph=False): Converts the maze to a networkx graph, and 
+   stores this as the attribute, G.
+
+7. solve_graph(print_solution=True, return_solution=False): Use with
+   to_graph(). Returns the shortest path from start to destination marked on
+   the original maze.
+
 ## Attributes
 1. original_maze:  This is available as soon as a maze is loaded with
    get_maze(filename).
@@ -83,6 +108,8 @@ maze.solve_maze()
 6. breaks:  Nested lists of every broken loop with new dead-ends filled in for
    each solution (including failed attempts). It as the structure:
    [ [ solution index, [ broken loop, broken loop, ...]]]
+
+7. G:  The original maze represented as a networkx graph.
 
 ## Known Issues
 1. Bafflingly, every so often, after successfully solving the maze many times,
