@@ -104,13 +104,13 @@ ms.solve_graph()
    [ [ solution index, [ foray index, [ (row, col), ...]]]]
 
 6. breaks:  Nested lists of every broken loop with new dead-ends filled in for
-   each solution (including failed attempts). It as the structure:
+   each solution (including failed attempts). It has the structure:
    [ [ solution index, [ broken loop, broken loop, ...]]]
 
 7. G:  The original maze represented as a networkx graph.
 
 ## Known Issues
-1. Bafflingly, every so often, after successfully solving the maze many times,
+1. Every so often, after successfully solving the maze many times,
    the maze walker takes off seemingly at random, walks through walls, across
    paths, until it runs off the edge of the maze and raises an IndexError. I
    have not figured out what causes this behavior. Re-running the solver
