@@ -51,63 +51,63 @@ ms.solve_graph()
 ```
 
 ## Methods
-1. \_\_init\_\_(source_wall='0', source_path='1',
+* \_\_init\_\_(source_wall='0', source_path='1',
             source_start='S', source_dest='D'):
     Creates a MazeSolver object. Sets the local and source file maze
     characters. Source file characters can be set with keyword
     arguments.
 
-2. get_maze(filename): Loads the maze from filename and converts the source file
-   characters to local characters. The source file should be a text file with
-   lines of equal length.
-
-3. verify_maze(): Optional. Verifies that the loaded maze has the correct form.
-   The maze should have rows of equal length, have exactly one start and one
-   destination character, and be completely bordered by wall characters. If a
-   border wall is missing, one is silently added. See test mazes,
-   'test_maze_10\*.txt', in this repository.
-
-4. solve_maze(n=50): Solves the maze n times and returns the shortest solution
-   marked on the original maze. As a progress indicator, it prints to the screen
-   the path length of each solution as it finds it, or an asterisk indicating a
-   failed attempt (the maze walker has cut off all paths from start to
-   destination). 
-
-5. get_forays(n, return_forays=False, print_forays=True):
+* get_forays(n, return_forays=False, print_forays=True):
    For a particular solution with index, n, prints or returns a list of all the
    forays into the maze that break the loops. n indexes all attempted solutions,
    even ones that fail (as indicated by \* in the progress indicator). Whereas
    the solutions and solution_lengths attributes contain only the successful
    attempts. So use the progress indicator to choose n for this method.
 
-6. to_graph(return_graph=False): Converts the maze to a networkx graph.
+* get_maze(filename): Loads the maze from filename and converts the source file
+   characters to local characters. The source file should be a text file with
+   lines of equal length.
 
-7. solve_graph(print_solution=True, return_solution=False): Use with
+* solve_graph(print_solution=True, return_solution=False): Use with
    to_graph(). Returns the shortest path from start to destination marked on
    the original maze.
 
+* solve_maze(n=50): Solves the maze n times and returns the shortest solution
+   marked on the original maze. As a progress indicator, it prints to the screen
+   the path length of each solution as it finds it, or an asterisk indicating a
+   failed attempt (the maze walker has cut off all paths from start to
+   destination). 
+
+* to_graph(return_graph=False): Converts the maze to a networkx graph.
+
+* verify_maze(): Optional. Verifies that the loaded maze has the correct form.
+   The maze should have rows of equal length, have exactly one start and one
+   destination character, and be completely bordered by wall characters. If a
+   border wall is missing, one is silently added. See test mazes,
+   'test_maze_10\*.txt', in this repository.
+
 ## Attributes
-1. original_maze:  This is available as soon as a maze is loaded with
-   get_maze(filename).
-
-2. shortest_solution:  The shortest path from start to finish marked on the
-   original maze. 
-
-3. solutions:  A list of all solutions found by the walker (there may be fewer
-   than n, because failed attempts are omitted).
-                      
-4. solution_lengths:  A list of the lengths of all solutions found by the walker
-   (excluding failed attempts).
-
-5. steps:  Nested lists of every step taken in the maze for each solution
-   (including failed attempts). It has the structure:
-   [ [ solution index, [ foray index, [ (row, col), ...]]]]
-
-6. breaks:  Nested lists of every broken loop with new dead-ends filled in for
+* breaks:  Nested lists of every broken loop with new dead-ends filled in for
    each solution (including failed attempts). It has the structure:
    [ [ solution index, [ broken loop, broken loop, ...]]]
 
-7. G:  The original maze represented as a networkx graph.
+* G:  The original maze represented as a networkx graph.
+
+* original_maze:  This is available as soon as a maze is loaded with
+   get_maze(filename).
+
+* shortest_solution:  The shortest path from start to finish marked on the
+   original maze. 
+
+* solution_lengths:  A list of the lengths of all solutions found by the walker
+   (excluding failed attempts).
+
+* solutions:  A list of all solutions found by the walker (there may be fewer
+   than n, because failed attempts are omitted).
+                      
+* steps:  Nested lists of every step taken in the maze for each solution
+   (including failed attempts). It has the structure:
+   [ [ solution index, [ foray index, [ (row, col), ...]]]]
 
 ## Known Issues
 1. Every so often, after successfully solving the maze many times,
