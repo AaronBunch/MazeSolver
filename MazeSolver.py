@@ -64,15 +64,14 @@ class MazeSolver:
 
     def get_maze(self, filename, return_maze=False):
         """Load the maze and convert to internal wall and path characters.
-        
+
         Args:
             filename (str): name of source file
-        
+
         Returns:
             maze (list):    source file characters converted to local
                             characters
         """
-        
         with open(filename) as f:
             maze = f.readlines()
         maze = [row.rstrip() for row in maze]
@@ -107,7 +106,6 @@ class MazeSolver:
         Returns:
             G:      the maze represented as a networkx graph
         """
-
         maze = self.original_maze[:]
         self.G = nx.Graph()
         for row in range(len(maze)):
@@ -127,13 +125,12 @@ class MazeSolver:
                     if paths[3]:
                         # path west
                         self.G.add_edge((row, col), (row, col-1))
-        
         if return_graph:
             return self.G
 
     def verify_maze(self, return_maze=False):
         """Verify that the loaded maze has the correct form.
-        
+
         The maze must have exactly one start and one destination character; it
         must be rectangular (all rows of equal length); and if a border wall is
         missing, one is silently added. Prints a message and returns nothing if
@@ -143,7 +140,6 @@ class MazeSolver:
             maze (list):    with border walls added, if necessary
             None:           if the maze is in the wrong form
         """
-
         # get start and destination positions
         self.S_row, self.S_col = self.find_char(self.original_maze, 'S')
         self.D_row, self.D_col = self.find_char(self.original_maze, 'D')
@@ -169,7 +165,6 @@ class MazeSolver:
         self.S_col = self.S_col[0]
         self.D_row = self.D_row[0]
         self.D_col = self.D_col[0]
-        
         # check for rectangularity
         row_lengths = []
         for row in self.original_maze:
@@ -202,7 +197,7 @@ class MazeSolver:
 
     def find_char(self, maze, char):
         """Find a given character in the maze.
-      
+
         Args:
             maze:   a list of strings
             char:   the character to find
@@ -211,7 +206,6 @@ class MazeSolver:
             char_row (list):   row indices of the character
             char_col (list):   column indices of the character
         """
-
         char_row = []
         char_col = []
         for row in range(0, len(maze)):
@@ -220,18 +214,17 @@ class MazeSolver:
                     char_row.append(row)
                     char_col.append(col)
         return char_row, char_col
- 
+
     def count_char(self, maze, char):
         """Count the number of a given character in the maze.
-       
+
         Args:
             maze:   a list of strings
             char:   the character to count
-                
+
         Returns:
             count (int)
         """
-
         count = 0
         for row in range(0, len(maze)):
             for col in range(0, len(maze[row])):
@@ -250,7 +243,6 @@ class MazeSolver:
         Returns:
             count (int):    the number of branches in the maze
         """
-
         count = 0
         for row in range(1, len(maze)-1):
             for col in range(1, len(maze[row])-1):
@@ -260,7 +252,7 @@ class MazeSolver:
 
     def insert_char(self, maze, row, col, char):
         """Insert a character into a maze at a specified row and column.
-       
+
         Args:
             maze:           a list of strings
             row (int):      the row index
@@ -270,7 +262,6 @@ class MazeSolver:
         Returns:
             maze (list):    the maze with the character inserted
         """
-
         temp_list = list(maze[row])
         temp_list[col] = char
         maze[row] = ''.join(temp_list)
@@ -278,9 +269,8 @@ class MazeSolver:
 
     def get_paths(self, maze, row, col):
         """Find the open paths at a position in a maze.
-      
+
         Paths that step off the border of the maze are not open.
-        
         (The way this is implemented now, the maze can probably have a ragged
         right edge. But that still needs to be tested.)
 
@@ -298,7 +288,7 @@ class MazeSolver:
         path_east = False
         path_west = False
 
-        try: 
+        try:
             if maze[row+1][col] != self.wall:
                 path_south = True
         except IndexError:
@@ -330,7 +320,7 @@ class MazeSolver:
 
     def is_dead_end(self, maze, row, col):
         """Determine if a point in the maze is a dead-end.
-       
+
         A dead-end is any path location with an open path in only one
         direction.
 
@@ -338,11 +328,10 @@ class MazeSolver:
             maze:           a list of strings
             row (int):      the row index
             col (int):      the column index
-        
+
         Returns:
             Boolean
         """
-
         paths = self.get_paths(maze, row, col)
         num_paths = sum([1 for p in paths if p])
         if ((maze[row][col] in [self.path, self.start, self.dest]) and
@@ -353,7 +342,7 @@ class MazeSolver:
 
     def is_walled_in(self, maze, row, col):
         """Determine if a maze location is surrounded entirely by walls.
-        
+
         This is used to filter out failed attempts, in which there is no path
         from start to destination (both are 'walled in').
 
@@ -365,7 +354,6 @@ class MazeSolver:
         Returns:
             Boolean
         """
-
         paths = self.get_paths(maze, row, col)
         if any(paths):
             return False
@@ -374,7 +362,7 @@ class MazeSolver:
 
     def is_branch(self, maze, row, col):
         """Determine if a maze location is branch in the path.
-        
+
         A branch is any path location that has open paths on at least
         three sides.
 
@@ -386,7 +374,6 @@ class MazeSolver:
         Returns:
             Boolean
         """
-
         paths = self.get_paths(maze, row, col)
         num_paths = sum([1 for path in paths if path])
         if ((maze[row][col] in [self.path, self.start, self.dest]) and
@@ -397,12 +384,12 @@ class MazeSolver:
 
     def fill_in_dead_ends(self, maze):
         """Fill in all dead-ends with wall.
-      
+
         Does not fill in start or destination tiles if these happen to
         lie at dead-ends.
 
         Args:
-            maze:   a list of strings 
+            maze:   a list of strings
 
         Returns:
             maze:   the maze with no dead-ends
@@ -420,13 +407,13 @@ class MazeSolver:
         return maze
 
     def count_dead_ends(self, maze):
-        """Counts the number of dead-ends in the maze. 
+        """Counts the number of dead-ends in the maze.
 
         Args:
             maze: a list of strings
 
         Returns:
-            count (int)   
+            count (int)
         """
 
         count = 0
@@ -537,7 +524,7 @@ class MazeSolver:
             prev_row (int):   the new previous row index
             prev_col (int):   the new previous column index
         """
-        
+
         path_north, path_south, path_east, path_west = paths
 
         temp_row = row
@@ -617,10 +604,10 @@ class MazeSolver:
 
     def break_loop(self, maze, turn='random'):
         """Find a loop in the maze, and break it by inserting a wall.
-        
+
         The loop is recognized when the walker returns to a branch.
         The loop is broken by walling off the branch behind the walker.
-          
+
         Args:
             maze:           a list of strings
 
@@ -643,7 +630,7 @@ class MazeSolver:
         # when S and/or D are not dead-ends, use seen_S and seen_D to avoid
         # infinite loops
         seen_S = False
-        seen_D = False 
+        seen_D = False
         while True:
             # see self.solve_maze() for the structure of self.steps
             # we are storing every step in nested lists
@@ -667,10 +654,10 @@ class MazeSolver:
                     else:
                         # if we are returning to S for the second time,
                         # start over
-                        if seen_S is True: 
+                        if seen_S is True:
                             maze = self.insert_char(maze, prev_row, prev_col,
                                                     self.wall)
-                            return maze 
+                            return maze
                         # if we are returning to S for the first time,
                         # keep going
                         else:
@@ -684,7 +671,7 @@ class MazeSolver:
                     if seen_D is True:
                         maze = self.insert_char(maze, prev_row, prev_col,
                                                 self.wall)
-                        return maze 
+                        return maze
                     else:
                         seen_D = True
 
@@ -694,7 +681,7 @@ class MazeSolver:
                 (maze[prev_row][prev_col] not in [self.start, self.dest])):
                 # put a wall at the previous position
                 maze = self.insert_char(maze, prev_row, prev_col, self.wall)
-                return maze 
+                return maze
 
             # check if we are at a branch for the first time
             if (self.is_branch(maze, row, col) and
@@ -724,11 +711,11 @@ class MazeSolver:
 
     def blaze_trail(self, solution):
         """Mark the solution on the original maze.
-        
+
         Args:
             solution (list):        a maze completely filled in except for a
                                     single path from start to finish
-       
+
         Returns:
             blazed_trail (list):    The original maze with the solution marked
                                     on it.
@@ -740,11 +727,11 @@ class MazeSolver:
                 if solution[row][col] == self.path:
                     blazed_trail = self.insert_char(blazed_trail,
                                                     row, col, self.blaze)
-        return blazed_trail 
+        return blazed_trail
 
     def solve_maze(self, n=50):
         """Solve the maze n times, and return the shortest solution.
-        
+
         Keyword Args:
             n (int):    number of times to solve the maze
 
@@ -752,7 +739,7 @@ class MazeSolver:
             shortest_solution (list):   The shortest path from start to finish
                                         marked onto the original maze.
         """
-        
+
         self.steps = []
 
         ######################################################################
@@ -779,7 +766,7 @@ class MazeSolver:
         self.solution_lengths = []
         for i in range(n):
             self.steps.append([i, []]) # i is the solution index
-            self.breaks.append([i, []]) 
+            self.breaks.append([i, []])
             working_maze = self.original_maze[:] # refresh working maze 
             working_maze = self.fill_in_dead_ends(working_maze)
             self.breaks[-1][1].append(working_maze)
@@ -819,7 +806,7 @@ class MazeSolver:
 
     def get_forays(self, n, return_forays=False, print_forays=True):
         """For one solution, shows the steps that break the loops.
-        
+
         Args:
             n (int): a solution index
 
@@ -831,13 +818,12 @@ class MazeSolver:
             forays (list):  The steps that break each loop marked on each
                             filled-in maze, so you can follow the progress
                             of the loop-breaking.
-        
         """
 
         forays = []
         for foray, maze in zip(self.steps[n][1], self.breaks[n][1]):
             for row, col in foray[1]:
-                if maze[row][col] not in [self.start, self.dest]: 
+                if maze[row][col] not in [self.start, self.dest]:
                     maze = self.insert_char(maze, row, col, self.blaze)
             forays.append(maze)
             if print_forays:
@@ -845,8 +831,8 @@ class MazeSolver:
                     print(''.join(row), end='\n')
 
         if return_forays:
-            return forays 
-        
+            return forays
+
     def solve_graph(self, print_solution=True, return_solution=False):
         """Returns the shortest path from start to destination marked on the
         original maze."""
